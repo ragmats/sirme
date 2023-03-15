@@ -1,0 +1,53 @@
+/* Cube ref: https://stackoverflow.com/questions/36331335/how-to-create-cube-with-only-html-and-css */
+
+.cube {
+  position: relative;
+  width: 202px;
+  height: 190px;
+  margin: 0px auto;
+  margin-top: 60px;
+}
+
+.side0 {
+  width: 110px;
+  height: 110px;
+  background: red;
+  transform: rotate(45deg) skew(-15deg, -15deg);
+  position: absolute;
+  left: 46px;
+  top: -42px;
+  opacity: 0.6;
+}
+
+.side1 {
+  width: 100px;
+  height: 100px;
+  background: green;
+  transform: skew(180deg, 150deg);
+  position: absolute;
+  left: 102px;
+  top: 43px;
+  opacity: 0.6;
+}
+
+.side2 {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  transform: skew(180deg, 210deg);
+  position: absolute;
+  top: 43px;
+  opacity: 0.6;
+}
+
+.on {
+  opacity: 1;
+}
+
+.player {
+  cursor: pointer;
+}
+
+.player-cube {
+  border: 1px solid red;
+}

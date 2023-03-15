@@ -1,38 +1,37 @@
+@import url("https://fonts.googleapis.com/css2?family=Katibeh&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Monoton&display=swap");
+
+h1 {
+  /* border: 1px solid red; */
+  font-family: "Monoton", sans-serif;
+  font-size: 4rem;
+  color: red;
+  line-height: 70%;
+  /* margin-bottom: 35px; */
+}
+
+h4 {
+  margin-bottom: 50px;
+}
+
 .App {
+  /* border: 1px solid red; */
   text-align: center;
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Make a media query to make this direction column */
+.main {
+  /* border: 1px solid green; */
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 20px;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.main-inside {
+  /* border: 1px solid red; */
+  min-width: 200px;
+  min-height: 200px;
 }

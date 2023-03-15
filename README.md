@@ -1,3 +1,13 @@
+# SIRME - a Simon game
+
+## Lessons Learned/Exercised
+
+- How to make a basic react app
+- How to make and manipulate a cube using CSS.
+- How to import custom fonts into React.
+- Using Local Storage
+- Learned how to use setTimeout in a sequence
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
