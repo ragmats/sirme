@@ -40,14 +40,17 @@
   opacity: 0.6;
 }
 
+/* Cube side style when turned "on" */
 .on {
   opacity: 1;
 }
 
+/* Cube side style when it's the player's turn */
 .player {
   cursor: pointer;
 }
 
+/* Cuber container style when it's the player turn */
 .player-cube {
-  border: 1px solid red;
+  border: 0px solid red;
 }

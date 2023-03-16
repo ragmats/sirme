@@ -4,7 +4,20 @@ import tone0 from "../audio/tone0.mp3";
 import tone1 from "../audio/tone1.mp3";
 import tone2 from "../audio/tone2.mp3";
 
-export default function Cube({ computerStart }) {
+export default function Cube({
+  playerName,
+  computerStart,
+  computerRestart,
+  toggleComputerRestart,
+  handleEndGame,
+  handleRestart,
+  repeat,
+  toggleDisableButtonsDuringComputerMoves,
+  advanceRound,
+  addPoint,
+  gameOver,
+  toggleGameOver,
+}) {
   const onSeconds = 0.3;
   const playerOnSeconds = 0.15;
   const offSeconds = 0.25;
@@ -17,6 +30,7 @@ export default function Cube({ computerStart }) {
   const [playerMoves, setPlayerMoves] = useState([]);
   const [sideClasses, setSideClasses] = useState(["side0", "side1", "side2"]);
   const [cubeClass, setCubeClass] = useState("cube");
+  // const [gameOver, setGameOver] = useState(false);
 
   /*
    * Resets after user enters name and it's the computer's first turn
@@ -31,10 +45,19 @@ export default function Cube({ computerStart }) {
   }, [computerStart]);
 
   /*
+   * Resets after user resets current game
+   */
+  useEffect(() => {
+    if (computerRestart) {
+      setComputerMoves([]);
+    }
+  }, [computerRestart]);
+
+  /*
    * Resets after each player turn when it's the computer's non-first turn
    */
   useEffect(() => {
-    if (computerTurn) {
+    if (computerTurn && !gameOver) {
       // Reset the player moves
       setPlayerMoves([]);
       // Add the next random computer move
@@ -43,12 +66,27 @@ export default function Cube({ computerStart }) {
   }, [computerTurn]);
 
   /*
-   * Resets when a new random computer move is added
+   * Resets when a new random computer move is added or moves are reset
    */
   useEffect(() => {
+    if (computerRestart) {
+      toggleComputerRestart();
+      addRandomComputerMove();
+    }
+    toggleDisableButtonsDuringComputerMoves(true);
     // Start "flashing" the sides, starting with move at index 0
     setTimeout(() => turnSideOn(0), 1000 * waitSeconds);
   }, [computerMoves]);
+
+  /*
+   * Resets when user repeats the computer moves
+   */
+  useEffect(() => {
+    if (repeat) {
+      turnSideOn(0);
+      toggleDisableButtonsDuringComputerMoves(true);
+    }
+  }, [repeat]);
 
   /*
    * Resets when it's the player's turn
@@ -65,19 +103,28 @@ export default function Cube({ computerStart }) {
    * Resets when the player makes a move
    */
   useEffect(() => {
-    // TODO Actually needs to compare every move to the parallel computer move, not just the final arrays so that a wrong move can end it.
     // TODO Need a game-over screen
-    // TODO increase point counter
-    // Compare player moves to computer move
-    if (playerMoves.length > 0 && playerMoves.length === computerMoves.length) {
-      if (compareArrays(playerMoves, computerMoves)) {
-        console.log(compareArrays(playerMoves, computerMoves));
-        // If player moves match, advance to the next "round"
-        setTimeout(() => endPlayerTurn(), 1000 * playerOnSeconds);
-        // TODO need to auto advance next round (like "Cheater" button)
-        // TODO Increase round counter
+    // Compare current player move to corresponding computer move
+    const lastPlayerMoveIdx = playerMoves.length - 1;
+    const playerMove = playerMoves[lastPlayerMoveIdx];
+    const computerMove = computerMoves[lastPlayerMoveIdx];
+
+    if (playerMoves.length > 0) {
+      if (playerMoves.length > 0 && playerMove === computerMove) {
+        console.log("You get a point!");
+        addPoint();
       } else {
         console.log("You lose!");
+        toggleGameOver();
+        toggleDisableButtonsDuringComputerMoves(true);
+      }
+
+      // Compare player moves to computer moves and advance to next round if fully matched
+      if (playerMoves.length === computerMoves.length) {
+        // console.log(compareArrays(playerMoves, computerMoves));
+        console.log("Next round!");
+        advanceRound();
+        setTimeout(() => endPlayerTurn(), 1000 * playerOnSeconds);
       }
     }
   }, [playerMoves]);
@@ -86,13 +133,6 @@ export default function Cube({ computerStart }) {
   function getRandomNumber() {
     let randomNumber = Math.floor(Math.random() * 3);
     return randomNumber;
-  }
-
-  // Compare arrays and return true if every element is equal
-  function compareArrays(playerMoves, computerMoves) {
-    return playerMoves.every(
-      (playerMove, idx) => playerMove === computerMoves[idx]
-    );
   }
 
   // Add a random number to the array of computer moves
@@ -131,7 +171,7 @@ export default function Cube({ computerStart }) {
 
   // Turn on side and play sound based on next computer move
   function turnSideOn(moveIdx) {
-    if (computerMoves.length > 0) {
+    if (computerMoves.length > 0 && !gameOver) {
       const side = computerMoves[moveIdx];
       sideClasses[side] = sideClasses[side] + " on";
       setSideClasses([...sideClasses]);
@@ -151,6 +191,7 @@ export default function Cube({ computerStart }) {
       setTimeout(() => turnSideOn(moveIdx + 1), 1000 * offSeconds);
     } else {
       setComputerTurn(false);
+      toggleDisableButtonsDuringComputerMoves(false);
       setPlayerTurn(true);
     }
   }
@@ -158,23 +199,46 @@ export default function Cube({ computerStart }) {
   return (
     <div>
       <div className={cubeClass}>
-        <div
-          id="0"
-          onClick={playerTurn ? (e) => addPlayerMove(e.target.id) : null}
-          className={sideClasses[0]}
-        ></div>
-        <div
-          id="1"
-          onClick={playerTurn ? (e) => addPlayerMove(e.target.id) : null}
-          className={sideClasses[1]}
-        ></div>
-        <div
-          id="2"
-          onClick={playerTurn ? (e) => addPlayerMove(e.target.id) : null}
-          className={sideClasses[2]}
-        ></div>
+        {gameOver ? (
+          <div>
+            <p>Game over, man!</p>
+            <button
+              onClick={() => {
+                setPlayerMoves([]);
+                handleRestart();
+              }}
+            >
+              Retry as {playerName}?
+            </button>
+            <button
+              onClick={() => {
+                setPlayerMoves([]);
+                handleEndGame();
+              }}
+            >
+              Play as someone else?
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div
+              id="0"
+              onClick={playerTurn ? (e) => addPlayerMove(e.target.id) : null}
+              className={sideClasses[0]}
+            ></div>
+            <div
+              id="1"
+              onClick={playerTurn ? (e) => addPlayerMove(e.target.id) : null}
+              className={sideClasses[1]}
+            ></div>
+            <div
+              id="2"
+              onClick={playerTurn ? (e) => addPlayerMove(e.target.id) : null}
+              className={sideClasses[2]}
+            ></div>
+          </div>
+        )}
       </div>
-      <button onClick={() => endPlayerTurn()}>Cheater</button>
     </div>
   );
 }
