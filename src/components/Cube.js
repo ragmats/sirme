@@ -7,16 +7,17 @@ import tone2 from "../audio/tone2.mp3";
 export default function Cube({
   playerName,
   computerStart,
-  computerRestart,
-  toggleComputerRestart,
+  restart,
   handleEndGame,
   handleRestart,
   repeat,
+  toggleRepeat,
   toggleDisableButtonsDuringComputerMoves,
   advanceRound,
   addPoint,
   gameOver,
   toggleGameOver,
+  quit,
 }) {
   const onSeconds = 0.3;
   const playerOnSeconds = 0.15;
@@ -30,7 +31,57 @@ export default function Cube({
   const [playerMoves, setPlayerMoves] = useState([]);
   const [sideClasses, setSideClasses] = useState(["side0", "side1", "side2"]);
   const [cubeClass, setCubeClass] = useState("cube");
-  // const [gameOver, setGameOver] = useState(false);
+
+  // ? Make a state computerClassBase and playerClassBase
+  const [computerClassBase, setComputerClassBase] = useState(false);
+  const [playerClassBase, setPlayerClassBase] = useState(false);
+
+  /*
+   * Resets when classes change and detects whe base classes have been set
+   */
+  useEffect(() => {
+    const baseComputerSideClasses = ["side0", "side1", "side2"];
+    const baseComputerCubeClass = "cube";
+    const basePlayerSideClasses = [
+      "side0 player",
+      "side1 player",
+      "side2 player",
+    ];
+    const basePlayerCubeClass = "cube player-cube";
+
+    // Check if side classes are bases classes
+    const computerSideClassesAreBase = sideClasses.every(
+      (sideClass, idx) => sideClass === baseComputerSideClasses[idx]
+    );
+    const playerSideClassesAreBase = sideClasses.every(
+      (sideClass, idx) => sideClass === basePlayerSideClasses[idx]
+    );
+
+    // Toggle class base indicators when classes do and don't match base classes
+    if (computerSideClassesAreBase && baseComputerCubeClass === cubeClass) {
+      setComputerClassBase(true);
+    } else {
+      setComputerClassBase(false);
+    }
+    if (playerSideClassesAreBase && basePlayerCubeClass === cubeClass) {
+      setPlayerClassBase(true);
+    } else {
+      setPlayerClassBase(false);
+    }
+  }, [sideClasses, cubeClass]);
+
+  /*
+   * Resets when class bases change
+   */
+  useEffect(() => {
+    // Once repeat is on and base computer classes confirmed, then repeat the sequence
+    if (repeat && computerClassBase) {
+      toggleRepeat();
+      setPlayerTurn(false);
+      toggleDisableButtonsDuringComputerMoves(true);
+      setTimeout(() => turnSideOn(0), 1000 * waitSeconds);
+    }
+  }, [computerClassBase, playerClassBase]);
 
   /*
    * Resets after user enters name and it's the computer's first turn
@@ -45,34 +96,37 @@ export default function Cube({
   }, [computerStart]);
 
   /*
-   * Resets after user resets current game
-   */
-  useEffect(() => {
-    if (computerRestart) {
-      setComputerMoves([]);
-    }
-  }, [computerRestart]);
-
-  /*
    * Resets after each player turn when it's the computer's non-first turn
    */
   useEffect(() => {
     if (computerTurn && !gameOver) {
-      // Reset the player moves
-      setPlayerMoves([]);
-      // Add the next random computer move
-      addRandomComputerMove();
+      applyComputerTurnStyles();
+      // Only do the following if not during a repeat phase
+      if (!repeat) {
+        // Reset the player moves each round
+        setPlayerMoves([]);
+        // Add the next random computer move
+        addRandomComputerMove();
+      }
     }
   }, [computerTurn]);
+
+  /*
+   * Resets after user resets current game
+   */
+  useEffect(() => {
+    if (restart) {
+      setComputerMoves([]);
+      applyComputerTurnStyles();
+      setPlayerTurn(false);
+      setComputerTurn(true);
+    }
+  }, [restart]);
 
   /*
    * Resets when a new random computer move is added or moves are reset
    */
   useEffect(() => {
-    if (computerRestart) {
-      toggleComputerRestart();
-      addRandomComputerMove();
-    }
     toggleDisableButtonsDuringComputerMoves(true);
     // Start "flashing" the sides, starting with move at index 0
     setTimeout(() => turnSideOn(0), 1000 * waitSeconds);
@@ -82,10 +136,8 @@ export default function Cube({
    * Resets when user repeats the computer moves
    */
   useEffect(() => {
-    if (repeat) {
-      turnSideOn(0);
-      toggleDisableButtonsDuringComputerMoves(true);
-    }
+    // First, if repeat, apply computer turn styles
+    if (repeat) applyComputerTurnStyles();
   }, [repeat]);
 
   /*
@@ -94,8 +146,7 @@ export default function Cube({
   useEffect(() => {
     // Change styling of the cube and sides for the player turn
     if (playerTurn) {
-      setSideClasses(["side0 player", "side1 player", "side2 player"]);
-      setCubeClass("cube player-cube");
+      applyPlayerTurnStyles();
     }
   }, [playerTurn]);
 
@@ -103,31 +154,41 @@ export default function Cube({
    * Resets when the player makes a move
    */
   useEffect(() => {
-    // TODO Need a game-over screen
-    // Compare current player move to corresponding computer move
-    const lastPlayerMoveIdx = playerMoves.length - 1;
-    const playerMove = playerMoves[lastPlayerMoveIdx];
-    const computerMove = computerMoves[lastPlayerMoveIdx];
-
     if (playerMoves.length > 0) {
-      if (playerMoves.length > 0 && playerMove === computerMove) {
-        console.log("You get a point!");
-        addPoint();
-      } else {
-        console.log("You lose!");
-        toggleGameOver();
-        toggleDisableButtonsDuringComputerMoves(true);
-      }
+      // Compare current player move to corresponding computer move
+      const lastPlayerMoveIdx = playerMoves.length - 1;
+      const playerMove = playerMoves[lastPlayerMoveIdx];
+      const computerMove = computerMoves[lastPlayerMoveIdx];
 
-      // Compare player moves to computer moves and advance to next round if fully matched
-      if (playerMoves.length === computerMoves.length) {
-        // console.log(compareArrays(playerMoves, computerMoves));
-        console.log("Next round!");
-        advanceRound();
-        setTimeout(() => endPlayerTurn(), 1000 * playerOnSeconds);
+      if (playerMove === computerMove) {
+        // console.log("You get a point!");
+        addPoint();
+        // Compare player moves to computer moves and advance to next round if fully matched
+        if (playerMoves.length === computerMoves.length) {
+          // console.log("Next round!");
+          advanceRound();
+          setTimeout(() => endPlayerTurn(), 1000 * playerOnSeconds);
+        }
+      } else {
+        // console.log("You lose!");
+        setTimeout(() => toggleGameOver(), 1000 * playerOnSeconds);
+        toggleDisableButtonsDuringComputerMoves(true);
       }
     }
   }, [playerMoves]);
+
+  useEffect(() => {
+    if (gameOver) {
+      setPlayerTurn(false);
+      applyComputerTurnStyles();
+    }
+  }, [gameOver]);
+
+  useEffect(() => {
+    setPlayerTurn(false);
+    applyComputerTurnStyles();
+    restartNewPlayer();
+  }, [quit]);
 
   // Get random number between 0 and 2
   function getRandomNumber() {
@@ -141,7 +202,7 @@ export default function Cube({
     setComputerMoves((prevMoves) => [...prevMoves, newMove]);
   }
 
-  // Add the selected move to the array of player moves
+  // Add the selected move to the array of player moves and turn that side on/off
   function addPlayerMove(id) {
     turnPlayerSideOn(id);
     setPlayerMoves((prevMoves) => [...prevMoves, parseInt(id)]);
@@ -149,15 +210,32 @@ export default function Cube({
 
   // Set cube and side classes for the computer's turn
   function endPlayerTurn() {
-    setSideClasses(["side0", "side1", "side2"]);
-    setCubeClass("cube");
     setComputerTurn(true);
     setPlayerTurn(false);
   }
 
+  function applyComputerTurnStyles() {
+    setSideClasses(["side0", "side1", "side2"]);
+    setCubeClass("cube");
+  }
+
+  function applyPlayerTurnStyles() {
+    setSideClasses(["side0 player", "side1 player", "side2 player"]);
+    setCubeClass("cube player-cube");
+  }
+
+  function restartSamePlayer() {
+    handleRestart();
+  }
+
+  function restartNewPlayer() {
+    handleEndGame();
+    setPlayerMoves([]);
+  }
+
   // Turn "on" a single side and play sound based on player selection
   function turnPlayerSideOn(playerSide) {
-    sideClasses[playerSide] = sideClasses[playerSide] + " player on";
+    sideClasses[playerSide] = sideClasses[playerSide] + " on";
     setSideClasses([...sideClasses]);
     sounds[playerSide].play();
     setTimeout(() => turnPlayerSideOff(playerSide), 1000 * playerOnSeconds);
@@ -193,6 +271,7 @@ export default function Cube({
       setComputerTurn(false);
       toggleDisableButtonsDuringComputerMoves(false);
       setPlayerTurn(true);
+      // if (repeat) toggleRepeat();
     }
   }
 
@@ -202,20 +281,10 @@ export default function Cube({
         {gameOver ? (
           <div>
             <p>Game over, man!</p>
-            <button
-              onClick={() => {
-                setPlayerMoves([]);
-                handleRestart();
-              }}
-            >
+            <button onClick={() => restartSamePlayer()}>
               Retry as {playerName}?
             </button>
-            <button
-              onClick={() => {
-                setPlayerMoves([]);
-                handleEndGame();
-              }}
-            >
+            <button onClick={() => restartNewPlayer()}>
               Play as someone else?
             </button>
           </div>

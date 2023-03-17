@@ -4,6 +4,12 @@ import "./App.css";
 import Cube from "./components/Cube";
 import Start from "./components/EnterNameAndStart";
 
+// ! BUG
+// !! Happens with Quit, Restart, Retry as X, and Retry as someone else, fist blink side is not pointer. Resolves after first move.
+// I think what's happening is the player moves are being reset before the computer moves, so computer move changes the style back to non-player.
+// To fix, find a way to set player moves to [] after reset/quits AFTER the computer moves
+// Check how the player styles are applied when there is no quit/restart. Find a way to mimic this.
+// !! Repeat causes all flashes sides to not have pointer
 // TODO move left and right panels into their own components - is there an easier way to set states of other components other than props? useContext?
 // TODO Record top 10 scores with names
 // TODO Show top scores in a modal
@@ -20,7 +26,6 @@ import Start from "./components/EnterNameAndStart";
 export default function App() {
   const [endGame, setEndGame] = useState(true);
   const [computerStart, setComputerStart] = useState(false);
-  const [computerRestart, setComputerRestart] = useState(false);
   const [
     disableButtonsDuringComputerMoves,
     setDisableButtonsDuringComputerMoves,
@@ -34,7 +39,9 @@ export default function App() {
   const [repeat, setRepeat] = useState(false);
   const [repeats, setRepeats] = useState(0);
   const [score, setScore] = useState(0);
+  const [restart, setRestart] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [quit, setQuit] = useState(false);
 
   /*
    * Resets when endGame ends or begins
@@ -48,13 +55,27 @@ export default function App() {
   }, [endGame]);
 
   /*
-   * Resets when user repeats
+   * Resets when restart button is pressed, toggles back to false
    */
   useEffect(() => {
-    if (repeat) {
-      setRepeat((prevRepeat) => false);
-    }
-  }, [repeat]);
+    if (restart) setRestart(false);
+  }, [restart]);
+
+  /*
+   * Resets when quit button is pressed, toggles back to false
+   */
+  useEffect(() => {
+    if (quit) setQuit(false);
+  }, [quit]);
+
+  /*
+   * Resets when user repeats
+   */
+  // useEffect(() => {
+  //   if (repeat) {
+  //     setRepeat((prevRepeat) => false);
+  //   }
+  // }, [repeat]);
 
   /*
    * Resets when
@@ -81,7 +102,7 @@ export default function App() {
     setPoints(0);
     setRepeats(0);
     setGameOver(false);
-    setComputerRestart(true);
+    setRestart(true);
   }
 
   function getNewPlayerName(newPlayerName) {
@@ -113,12 +134,12 @@ export default function App() {
     setRepeats((currentRepeats) => currentRepeats + 1);
   }
 
-  function toggleGameOver() {
-    setGameOver(!gameOver);
+  function toggleRepeat() {
+    setRepeat(!repeat);
   }
 
-  function toggleComputerRestart() {
-    setComputerRestart(!computerRestart);
+  function toggleGameOver() {
+    setGameOver(!gameOver);
   }
 
   return (
@@ -146,11 +167,11 @@ export default function App() {
             <Cube
               playerName={playerName}
               computerStart={computerStart}
-              computerRestart={computerRestart}
+              restart={restart}
               handleEndGame={handleEndGame}
               handleRestart={handleRestart}
-              toggleComputerRestart={toggleComputerRestart}
               repeat={repeat}
+              toggleRepeat={toggleRepeat}
               toggleDisableButtonsDuringComputerMoves={
                 toggleDisableButtonsDuringComputerMoves
               }
@@ -158,6 +179,7 @@ export default function App() {
               addPoint={addPoint}
               gameOver={gameOver}
               toggleGameOver={toggleGameOver}
+              quit={quit}
             />
           </div>
           <div className="main-inside">
@@ -175,16 +197,19 @@ export default function App() {
               Restart
             </button>
             <br />
-            <button disabled={disableButtonsDuringComputerMoves ? true : false}>
+            <button
+              disabled={
+                disableButtonsDuringComputerMoves && !gameOver ? true : false
+              }
+            >
               High Scores
             </button>
             <br />
             <button
-              disabled={disableButtonsDuringComputerMoves ? true : false}
-              onClick={() => {
-                // End game - will need to handle recording score,
-                handleEndGame();
-              }}
+              disabled={
+                disableButtonsDuringComputerMoves && !gameOver ? true : false
+              }
+              onClick={() => setQuit(true)}
             >
               Quit
             </button>

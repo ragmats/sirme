@@ -12,7 +12,11 @@ export default function EnterNameAndStart({
   const [name, setName] = useState(playerName);
 
   useEffect(() => {
-    localStorage.playerName = name;
+    if (name === "") {
+      localStorage.playerName = defaultName;
+    } else {
+      localStorage.playerName = name;
+    }
   }, [name]);
 
   const handleClose = () => {
