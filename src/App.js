@@ -1,26 +1,21 @@
 // import logo from './logo.svg';
 import { useEffect, useState } from "react";
 import "./App.css";
+import { v4 as uuidv4 } from "uuid";
 import Cube from "./components/Cube";
 import Start from "./components/EnterNameAndStart";
+import HighScores from "./components/HighScores";
 
-// ! BUG
-// !! Happens with Quit, Restart, Retry as X, and Retry as someone else, fist blink side is not pointer. Resolves after first move.
-// I think what's happening is the player moves are being reset before the computer moves, so computer move changes the style back to non-player.
-// To fix, find a way to set player moves to [] after reset/quits AFTER the computer moves
-// Check how the player styles are applied when there is no quit/restart. Find a way to mimic this.
-// !! Repeat causes all flashes sides to not have pointer
-// TODO move left and right panels into their own components - is there an easier way to set states of other components other than props? useContext?
-// TODO Record top 10 scores with names
-// TODO Show top scores in a modal
-// TODO Handle names that are too long with...
-// TODO handle same player names with different capitalization -- convert to all CAP?
 // TODO Show score to beat if player has a previous high score
 // TODO Change "score to beat" to "New high score!" if current player beats it
+// TODO Handle names that are too long with...
+// TODO handle same player names with different capitalization -- convert to all CAP?
+// TODO move left and right panels into their own components - is there an easier way to set states of other components other than props? useContext?
 // TODO Add cool styling to buttons
 // TODO Add cool styling to flashing sides
 // TODO Add cool styling to player turn behind cube?
 // TODO Add link to website?
+// TODO Possibly move retry/quit buttons from Cube to here. Should it be a GameOver component?
 //
 
 export default function App() {
@@ -32,7 +27,9 @@ export default function App() {
   ] = useState(false);
   const [defaultName] = useState("Guest Player");
   const [playerName, setPlayerName] = useState(
-    localStorage.playerName ? localStorage.playerName : defaultName
+    localStorage.getItem("playerName")
+      ? localStorage.getItem("playerName")
+      : defaultName
   );
   const [round, setRound] = useState(1);
   const [points, setPoints] = useState(0);
@@ -42,6 +39,13 @@ export default function App() {
   const [restart, setRestart] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [quit, setQuit] = useState(false);
+  const [numberOfHighScores, setNumberOfHighscores] = [10];
+  const [highScores, setHighScores] = useState(
+    localStorage.getItem("highScores")
+      ? JSON.parse(localStorage.getItem("highScores"))
+      : []
+  );
+  const [areYouSure, setAreYouSure] = useState(false);
 
   /*
    * Resets when endGame ends or begins
@@ -53,6 +57,44 @@ export default function App() {
       setComputerStart(false);
     }
   }, [endGame]);
+
+  /*
+   * Resets whenever the score changes
+   */
+  useEffect(() => {
+    if (score > 0) {
+      // Check if user is already in highscores
+      const playerFound = highScores.some(
+        (highScore) => highScore.name === playerName
+      );
+
+      // Add to highscores if player is not already present
+      if (!playerFound) {
+        // If there is an open space, just go ahead and add the score
+        if (highScores.length < numberOfHighScores) {
+          addNewHighScore();
+          // If no open space, repace the lowest score once the player exceeds it
+        } else if (score > highScores[numberOfHighScores - 1].score) {
+          replaceLowestHighScore();
+        }
+      } else {
+        const currentPlayerHighScore = highScores.filter(
+          (highScore) => highScore.name === playerName
+        );
+        if (score > currentPlayerHighScore[0].score) updatePlayerHighScore();
+      }
+    }
+  }, [score]);
+
+  useEffect(() => {
+    console.log(highScores);
+    console.log(typeof highScores);
+    if (highScores) {
+      highScores.sort((a, b) => b.score - a.score);
+      // Ref: https://blog.logrocket.com/storing-retrieving-javascript-objects-localstorage/
+      localStorage.setItem("highScores", JSON.stringify(highScores));
+    }
+  }, [highScores]);
 
   /*
    * Resets when restart button is pressed, toggles back to false
@@ -69,16 +111,7 @@ export default function App() {
   }, [quit]);
 
   /*
-   * Resets when user repeats
-   */
-  // useEffect(() => {
-  //   if (repeat) {
-  //     setRepeat((prevRepeat) => false);
-  //   }
-  // }, [repeat]);
-
-  /*
-   * Resets when
+   * Resets when user gains a point or clicks repeat
    */
   useEffect(() => {
     setScore(points - repeats);
@@ -106,8 +139,8 @@ export default function App() {
   }
 
   function getNewPlayerName(newPlayerName) {
-    if (localStorage.playerName) {
-      setPlayerName(localStorage.playerName);
+    if (localStorage.getItem("playerName")) {
+      setPlayerName(localStorage.getItem("playerName"));
     } else {
       setPlayerName(newPlayerName);
     }
@@ -142,6 +175,43 @@ export default function App() {
     setGameOver(!gameOver);
   }
 
+  function addNewHighScore() {
+    const newHighScore = {
+      id: uuidv4(),
+      name: playerName,
+      score: score,
+    };
+    setHighScores([...highScores, newHighScore]);
+  }
+
+  function replaceLowestHighScore() {
+    highScores[numberOfHighScores - 1] = {
+      id: uuidv4(),
+      name: playerName,
+      score: score,
+    };
+    setHighScores(highScores);
+  }
+
+  function updatePlayerHighScore() {
+    // Update existing high scores
+    const updatedHighScores = highScores.map((highscore) => {
+      if (highscore.name === playerName) {
+        return { ...highscore, score: score };
+      }
+      return highscore;
+    });
+    setHighScores(updatedHighScores);
+  }
+
+  function clearHighScores() {
+    setHighScores([]);
+  }
+
+  function toggleAreYouSure() {
+    setAreYouSure(!areYouSure);
+  }
+
   return (
     <div className="App">
       {endGame ? (
@@ -157,13 +227,14 @@ export default function App() {
         <h4>a Simon game</h4>
         <div className="main">
           <div className="main-inside">
-            <p>{playerName}</p>
+            <p className="name">{playerName}</p>
             <p>Round: {round}</p>
             <p>Points: {points}</p>
             <p>Repeats: ({repeats})</p>
             <p>Total Score: {score}</p>
           </div>
           <div className="main-inside">
+            {gameOver ? <p>:(</p> : <p>Points until high score: 9,999</p>}
             <Cube
               playerName={playerName}
               computerStart={computerStart}
@@ -197,13 +268,16 @@ export default function App() {
               Restart
             </button>
             <br />
-            <button
-              disabled={
-                disableButtonsDuringComputerMoves && !gameOver ? true : false
+            <HighScores
+              highScores={highScores}
+              clearHighScores={clearHighScores}
+              areYouSure={areYouSure}
+              toggleAreYouSure={toggleAreYouSure}
+              disableButtonsDuringComputerMoves={
+                disableButtonsDuringComputerMoves
               }
-            >
-              High Scores
-            </button>
+              gameOver={gameOver}
+            />
             <br />
             <button
               disabled={
@@ -212,6 +286,15 @@ export default function App() {
               onClick={() => setQuit(true)}
             >
               Quit
+            </button>
+            <br />
+            <button
+              disabled={
+                disableButtonsDuringComputerMoves && !gameOver ? true : false
+              }
+            >
+              ( i )
+              {/* This will open up a modal with rules and info about the app. */}
             </button>
           </div>
         </div>

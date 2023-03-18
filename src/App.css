@@ -23,6 +23,12 @@ h4 {
   transform: translate(-50%, -50%);
 }
 
+.name {
+  /* font-family: "Monoton", sans-serif; */
+  font-size: 1.5rem;
+  color: red;
+}
+
 /* Make a media query to make this direction column */
 .main {
   /* border: 1px solid green; */
