@@ -1,7 +1,7 @@
 import Table from "react-bootstrap/Table";
 import "../CSS/HighScores.css";
 
-export default function HighScoresTable({ highScores }) {
+export default function HighScoresTable({ highScores, playerName }) {
   return (
     <>
       {highScores.length > 0 ? (
@@ -14,10 +14,12 @@ export default function HighScoresTable({ highScores }) {
             </tr>
           </thead>
           <tbody>
-            {console.log("highScores: ", highScores)}
             {highScores.map(({ id, name, score }, idx) => {
               return (
-                <tr key={id}>
+                <tr
+                  className={playerName === name ? "highlighted" : null}
+                  key={id}
+                >
                   <td>{idx + 1}</td>
                   <td>{name}</td>
                   <td>{score}</td>

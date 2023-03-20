@@ -5,6 +5,7 @@ import HighScoresTable from "./HighScoresTable";
 import "../CSS/HighScores.css";
 
 export default function HighScores({
+  playerName,
   highScores,
   clearHighScores,
   areYouSure,
@@ -63,7 +64,7 @@ export default function HighScores({
               </Button>
             </div>
           ) : (
-            <HighScoresTable highScores={highScores} />
+            <HighScoresTable highScores={highScores} playerName={playerName} />
           )}
         </Modal.Body>
         <Modal.Footer>

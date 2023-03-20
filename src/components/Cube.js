@@ -136,6 +136,8 @@ export default function Cube({
    * Resets when user repeats the computer moves
    */
   useEffect(() => {
+    // Reset player moves for this round
+    setPlayerMoves([]);
     // First, if repeat, apply computer turn styles
     if (repeat) applyComputerTurnStyles();
   }, [repeat]);
@@ -275,6 +277,12 @@ export default function Cube({
     }
   }
 
+  function cheat() {
+    addPoint();
+    advanceRound();
+    setTimeout(() => endPlayerTurn(), 1000 * playerOnSeconds);
+  }
+
   return (
     <div>
       <div className={cubeClass}>
@@ -308,6 +316,7 @@ export default function Cube({
           </div>
         )}
       </div>
+      <button onClick={cheat}>cheat</button>
     </div>
   );
 }
