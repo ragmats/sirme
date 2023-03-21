@@ -290,7 +290,11 @@ export default function Cube({
           <div>
             <p>Game over, man!</p>
             <button onClick={() => restartSamePlayer()}>
-              Retry as {playerName}?
+              Retry as{" "}
+              {playerName.length > 12
+                ? playerName.toLowerCase().substring(0, 12) + "..."
+                : playerName.toLowerCase()}
+              ?
             </button>
             <button onClick={() => restartNewPlayer()}>
               Play as someone else?
@@ -316,7 +320,7 @@ export default function Cube({
           </div>
         )}
       </div>
-      <button onClick={cheat}>cheat</button>
+      {/* <button onClick={cheat}>cheat</button> */}
     </div>
   );
 }

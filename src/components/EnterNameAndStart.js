@@ -13,10 +13,8 @@ export default function EnterNameAndStart({
 
   useEffect(() => {
     if (name === "") {
-      // localStorage.playerName = defaultName;
       localStorage.setItem("playerName", defaultName);
     } else {
-      // localStorage.playerName = name;
       localStorage.setItem("playerName", name);
     }
   }, [name]);

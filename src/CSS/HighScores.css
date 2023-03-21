@@ -8,6 +8,12 @@
   margin-right: 5px;
 }
 
+.highscore-name {
+  font-variant: small-caps;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
 .highlighted {
   background-color: rgba(255, 196, 0, 0.342);
 }

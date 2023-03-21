@@ -26,6 +26,7 @@ h4 {
 .name {
   /* font-family: "Monoton", sans-serif; */
   font-size: 1.5rem;
+  font-variant: small-caps;
   color: red;
 }
 
@@ -39,5 +40,5 @@ h4 {
 .main-inside {
   border: 1px solid red;
   min-width: 200px;
-  min-height: 350px;
+  min-height: 300px;
 }

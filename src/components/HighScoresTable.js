@@ -17,11 +17,18 @@ export default function HighScoresTable({ highScores, playerName }) {
             {highScores.map(({ id, name, score }, idx) => {
               return (
                 <tr
-                  className={playerName === name ? "highlighted" : null}
+                  className={
+                    playerName.toLowerCase() === name ? "highlighted" : null
+                  }
                   key={id}
                 >
                   <td>{idx + 1}</td>
-                  <td>{name}</td>
+                  {/* <td className="highscore-name">{name.toLowerCase()}</td> */}
+                  <td className="highscore-name">
+                    {name.length > 12
+                      ? name.toLowerCase().substring(0, 12) + "..."
+                      : name.toLowerCase()}
+                  </td>
                   <td>{score}</td>
                 </tr>
               );

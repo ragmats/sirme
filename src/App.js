@@ -6,14 +6,6 @@ import Cube from "./components/Cube";
 import Start from "./components/EnterNameAndStart";
 import HighScores from "./components/HighScores";
 
-// !! Consider replacing next high score, etc with "personal best!"
-// how to reduce flickering? useCallback hook?
-// Test when only 1 player, in top rank, and scores were cleared.
-// TODO when high scores are cleared, rank needs to be reset (should be done), along with personal best, etc.
-// TODO same when pressing restart and quit
-
-// TODO Handle names that are too long with...
-// TODO handle same player names with different capitalization -- convert to all CAP?
 // TODO move left and right panels into their own components - is there an easier way to set states of other components other than props? useContext?
 // TODO Add cool styling to buttons
 // TODO Add cool styling to flashing sides
@@ -62,20 +54,6 @@ export default function App() {
     } else {
       setComputerStart(true);
       getCurrentPlayerRank();
-
-      // On game start, set initial playerHighScore if player has a high score
-      if (playerFound()) {
-        // setPlayerHighScore(getCurrentPlayerHighScore());
-      } else {
-        // setPlayerRank(null);
-        // If high scores are less than 10, should be set to 1
-        if (highScores.length < numberOfHighScoresLimit) {
-          // setPointsUntilHighScore(1);
-        } else {
-          // Since leaderboard is full, set to lowest score + 1
-          // setPointsUntilHighScore(lowestScoreOfLeaderboard());
-        }
-      }
     }
   }, [endGame]);
 
@@ -85,7 +63,6 @@ export default function App() {
   useEffect(() => {
     if (score > 0) {
       if (playerFound()) {
-        // setPlayerRank(getCurrentPlayerRank());
         const currentPlayerHighScore = getCurrentPlayerHighScore();
         if (score > currentPlayerHighScore) {
           updatePlayerHighScore();
@@ -104,15 +81,13 @@ export default function App() {
   }, [score]);
 
   useEffect(() => {
-    // console.log("highScores is triggered");
     if (highScores.length > 0) {
       highScores.sort((a, b) => b.score - a.score);
-      // Ref: https://blog.logrocket.com/storing-retrieving-javascript-objects-localstorage/
     }
+    // Ref: https://blog.logrocket.com/storing-retrieving-javascript-objects-localstorage/
     localStorage.setItem("highScores", JSON.stringify(highScores));
     getCurrentPlayerRank();
     setPersonalBest(getPersonalBest());
-    // console.log({ highScores });
   }, [highScores]);
 
   useEffect(() => {
@@ -120,12 +95,12 @@ export default function App() {
   }, [playerName]);
 
   useEffect(() => {
-    console.log({ playerRank });
+    // console.log({ playerRank });
     setPersonalBest(getPersonalBest());
   }, [playerRank]);
 
   useEffect(() => {
-    console.log({ personalBest });
+    // console.log({ personalBest });
   }, [personalBest]);
 
   /*
@@ -210,21 +185,21 @@ export default function App() {
   // Check if user is already in highscores
   function playerFound() {
     const playerFound = highScores.some(
-      (highScore) => highScore.name === playerName
+      (highScore) => highScore.name === playerName.toLowerCase()
     );
     return playerFound;
   }
 
   function getCurrentPlayerHighScore() {
     const currentPlayerHighScore = highScores.filter(
-      (highScore) => highScore.name === playerName
+      (highScore) => highScore.name === playerName.toLowerCase()
     );
     return currentPlayerHighScore[0].score;
   }
 
   function getCurrentPlayerIdx() {
     const idx = highScores.findIndex(
-      (highScore) => highScore.name === playerName
+      (highScore) => highScore.name === playerName.toLowerCase()
     );
     return idx;
   }
@@ -240,7 +215,7 @@ export default function App() {
 
   function getPersonalBest() {
     let currentPersonalBest;
-    if (playerRank) {
+    if (highScores.length > 0 && playerRank) {
       const currentPlayerIndex = getCurrentPlayerIdx();
       currentPersonalBest = highScores[currentPlayerIndex].score;
     } else {
@@ -256,7 +231,7 @@ export default function App() {
   function addNewHighScore() {
     const newHighScore = {
       id: uuidv4(),
-      name: playerName,
+      name: playerName.toLowerCase(),
       score: score,
     };
     setHighScores([...highScores, newHighScore]);
@@ -265,7 +240,7 @@ export default function App() {
   function replaceLowestHighScore() {
     highScores[numberOfHighScoresLimit - 1] = {
       id: uuidv4(),
-      name: playerName,
+      name: playerName.toLowerCase(),
       score: score,
     };
     setHighScores(highScores);
@@ -274,7 +249,7 @@ export default function App() {
   function updatePlayerHighScore() {
     // Update existing high scores
     const updatedHighScores = highScores.map((highscore) => {
-      if (highscore.name === playerName) {
+      if (highscore.name === playerName.toLowerCase()) {
         return { ...highscore, score: score };
       }
       return highscore;
@@ -305,17 +280,18 @@ export default function App() {
         <h4>a Simon game</h4>
         <div className="main">
           <div className="main-inside">
-            <p className="name">{playerName}</p>
+            {playerName.length > 12 ? (
+              <p className="name">
+                {playerName.toLocaleLowerCase().substring(0, 12) + "..."}
+              </p>
+            ) : (
+              <p className="name">{playerName.toLocaleLowerCase()}</p>
+            )}
             <p>Round: {round}</p>
             <p>Points: {points}</p>
             <p>Repeats: ({repeats})</p>
             <p>Total Score: {score}</p>
             {playerRank ? <p>Rank: {playerRank}</p> : null}
-            {personalBest === score && playerRank === 1 ? (
-              <p>Top score!</p>
-            ) : personalBest === score ? (
-              <p>Personal best!</p>
-            ) : null}
           </div>
           <div className="main-inside">
             <Cube
@@ -335,6 +311,11 @@ export default function App() {
               toggleGameOver={toggleGameOver}
               quit={quit}
             />
+            {!gameOver && personalBest === score && playerRank === 1 ? (
+              <p>Top score!</p>
+            ) : !gameOver && personalBest === score ? (
+              <p>Personal best score!</p>
+            ) : null}
           </div>
           <div className="main-inside">
             <button
