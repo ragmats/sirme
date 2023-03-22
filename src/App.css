@@ -14,6 +14,51 @@ h4 {
   margin-bottom: 50px;
 }
 
+.right-menu-button {
+  border: 1px solid red;
+  border-radius: 7px;
+  background: transparent;
+  color: red;
+  min-width: 125px;
+  transition: border, color 0.5s ease-out;
+  /* margin: 5px; */
+}
+
+.right-menu-button:disabled {
+  border: 1px solid rgb(255, 150, 150);
+  color: rgb(255, 150, 150);
+}
+
+.right-menu-button:hover:not([disabled]),
+.right-menu-button:focus:not([disabled]) {
+  outline: none;
+  background: yellow;
+}
+
+.info-button {
+  border: 2px solid yellow;
+  border-radius: 50%;
+  background: transparent;
+  color: yellow;
+  min-width: 30px;
+  min-height: 30px;
+  margin-top: 15px;
+  font-size: 1rem;
+  transition: border, color 0.5s ease-out;
+  /* margin: 5px; */
+}
+
+.info-button:disabled {
+  border: 1px solid rgb(255, 255, 150);
+  color: rgb(255, 255, 150);
+}
+
+.info-button:hover:not([disabled]),
+.info-button:focus:not([disabled]) {
+  outline: none;
+  background: red;
+}
+
 .App {
   /* border: 1px solid red; */
   text-align: center;
@@ -25,8 +70,9 @@ h4 {
 
 .name {
   /* font-family: "Monoton", sans-serif; */
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-variant: small-caps;
+  line-height: 1;
   color: red;
 }
 
@@ -38,7 +84,7 @@ h4 {
 }
 
 .main-inside {
-  border: 1px solid red;
+  /* border: 1px solid red; */
   min-width: 200px;
   min-height: 300px;
 }

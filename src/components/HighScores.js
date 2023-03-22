@@ -8,29 +8,35 @@ export default function HighScores({
   playerName,
   highScores,
   clearHighScores,
-  areYouSure,
-  toggleAreYouSure,
   disableButtonsDuringComputerMoves,
   gameOver,
 }) {
+  const [areYouSure, setAreYouSure] = useState(false);
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => {
+    setAreYouSure(false);
+    setShow(false);
+  };
+  const handleShow = (e) => {
+    setShow(true);
+    // Remove focus from the "high Scores" button clicked to open the modal
+    e.target.blur();
+  };
   function handleYes() {
     clearHighScores();
     toggleAreYouSure();
   }
 
-  // TODO ask if the person is sure they want to clear the scores.
+  function toggleAreYouSure() {
+    setAreYouSure(!areYouSure);
+  }
 
   return (
     <>
-      {/* <Button variant="primary" onClick={handleShow}>
-        Launch demo modal
-      </Button> */}
       <button
-        onClick={handleShow}
+        className="right-menu-button"
+        onClick={(e) => handleShow(e)}
         disabled={disableButtonsDuringComputerMoves && !gameOver ? true : false}
       >
         High Scores

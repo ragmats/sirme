@@ -5,6 +5,12 @@ import { v4 as uuidv4 } from "uuid";
 import Cube from "./components/Cube";
 import Start from "./components/EnterNameAndStart";
 import HighScores from "./components/HighScores";
+import Button from "react-bootstrap/Button";
+import InfoPanel from "./components/InfoPanel";
+import ControlPanel from "./components/ControlPanel";
+import ScoreMessage from "./components/ScoreMessage";
+
+// TODO Reduce flickering of Personal Best message -- possibly have a state that only changes if this changes, not getting checked every score change. Maybe call it "scoreMessage"
 
 // TODO move left and right panels into their own components - is there an easier way to set states of other components other than props? useContext?
 // TODO Add cool styling to buttons
@@ -43,7 +49,6 @@ export default function App() {
       : []
   );
   const [personalBest, setPersonalBest] = useState(null);
-  const [areYouSure, setAreYouSure] = useState(false);
 
   /*
    * Resets when endGame ends or begins
@@ -72,7 +77,7 @@ export default function App() {
         if (highScores.length < numberOfHighScoresLimit) {
           addNewHighScore();
           // If no open space, replace the lowest score once the player exceeds it
-        } else if (score > lowestScoreOfLeaderboard()) {
+        } else if (score > getLowestHighScore()) {
           replaceLowestHighScore();
         }
       }
@@ -80,6 +85,9 @@ export default function App() {
     getCurrentPlayerRank();
   }, [score]);
 
+  /*
+   * Resets whenever a high score is added or changed
+   */
   useEffect(() => {
     if (highScores.length > 0) {
       highScores.sort((a, b) => b.score - a.score);
@@ -90,18 +98,20 @@ export default function App() {
     setPersonalBest(getPersonalBest());
   }, [highScores]);
 
+  /*
+   * Resets whenever player changes name
+   */
   useEffect(() => {
     getCurrentPlayerRank();
   }, [playerName]);
 
+  /*
+   * Resets whenever player rank changes
+   */
   useEffect(() => {
     // console.log({ playerRank });
     setPersonalBest(getPersonalBest());
   }, [playerRank]);
-
-  useEffect(() => {
-    // console.log({ personalBest });
-  }, [personalBest]);
 
   /*
    * Resets when restart button is pressed, toggles back to false
@@ -124,7 +134,6 @@ export default function App() {
     setScore(points - repeats);
   }, [points, repeats]);
 
-  // Send function as a prop so modal can begin the game
   function startGame() {
     setEndGame(false);
   }
@@ -143,6 +152,10 @@ export default function App() {
     setRepeats(0);
     setGameOver(false);
     setRestart(true);
+  }
+
+  function handleQuit() {
+    setQuit(true);
   }
 
   function getNewPlayerName(newPlayerName) {
@@ -224,7 +237,7 @@ export default function App() {
     return currentPersonalBest;
   }
 
-  function lowestScoreOfLeaderboard() {
+  function getLowestHighScore() {
     return highScores[highScores.length - 1].score;
   }
 
@@ -247,7 +260,6 @@ export default function App() {
   }
 
   function updatePlayerHighScore() {
-    // Update existing high scores
     const updatedHighScores = highScores.map((highscore) => {
       if (highscore.name === playerName.toLowerCase()) {
         return { ...highscore, score: score };
@@ -259,10 +271,6 @@ export default function App() {
 
   function clearHighScores() {
     setHighScores([]);
-  }
-
-  function toggleAreYouSure() {
-    setAreYouSure(!areYouSure);
   }
 
   return (
@@ -280,18 +288,14 @@ export default function App() {
         <h4>a Simon game</h4>
         <div className="main">
           <div className="main-inside">
-            {playerName.length > 12 ? (
-              <p className="name">
-                {playerName.toLocaleLowerCase().substring(0, 12) + "..."}
-              </p>
-            ) : (
-              <p className="name">{playerName.toLocaleLowerCase()}</p>
-            )}
-            <p>Round: {round}</p>
-            <p>Points: {points}</p>
-            <p>Repeats: ({repeats})</p>
-            <p>Total Score: {score}</p>
-            {playerRank ? <p>Rank: {playerRank}</p> : null}
+            <InfoPanel
+              playerName={playerName}
+              round={round}
+              points={points}
+              repeats={repeats}
+              score={score}
+              playerRank={playerRank}
+            />
           </div>
           <div className="main-inside">
             <Cube
@@ -311,56 +315,26 @@ export default function App() {
               toggleGameOver={toggleGameOver}
               quit={quit}
             />
-            {!gameOver && personalBest === score && playerRank === 1 ? (
-              <p>Top score!</p>
-            ) : !gameOver && personalBest === score ? (
-              <p>Personal best score!</p>
-            ) : null}
+            <ScoreMessage
+              gameOver={gameOver}
+              personalBest={personalBest}
+              score={score}
+              playerRank={playerRank}
+            />
           </div>
           <div className="main-inside">
-            <button
-              disabled={disableButtonsDuringComputerMoves ? true : false}
-              onClick={() => repeatComputer()}
-            >
-              Repeat
-            </button>
-            <br />
-            <button
-              disabled={disableButtonsDuringComputerMoves ? true : false}
-              onClick={handleRestart}
-            >
-              Restart
-            </button>
-            <br />
-            <HighScores
-              playerName={playerName}
-              highScores={highScores}
-              clearHighScores={clearHighScores}
-              areYouSure={areYouSure}
-              toggleAreYouSure={toggleAreYouSure}
+            <ControlPanel
               disableButtonsDuringComputerMoves={
                 disableButtonsDuringComputerMoves
               }
+              repeatComputer={repeatComputer}
+              handleRestart={handleRestart}
+              playerName={playerName}
+              highScores={highScores}
+              clearHighScores={clearHighScores}
               gameOver={gameOver}
+              handleQuit={handleQuit}
             />
-            <br />
-            <button
-              disabled={
-                disableButtonsDuringComputerMoves && !gameOver ? true : false
-              }
-              onClick={() => setQuit(true)}
-            >
-              Quit
-            </button>
-            <br />
-            <button
-              disabled={
-                disableButtonsDuringComputerMoves && !gameOver ? true : false
-              }
-            >
-              ( i )
-              {/* This will open up a modal with rules and info about the app. */}
-            </button>
           </div>
         </div>
       </div>

@@ -1,5 +1,9 @@
 /* Cube ref: https://stackoverflow.com/questions/36331335/how-to-create-cube-with-only-html-and-css */
 
+:root {
+  --cube-shadow-color: yellow;
+}
+
 .cube {
   position: relative;
   width: 202px;
@@ -17,6 +21,8 @@
   left: 46px;
   top: -42px;
   opacity: 0.6;
+  box-shadow: 0px 0px 0px 0px var(--cube-shadow-color);
+  transition: box-shadow 0.5s ease-in-out;
 }
 
 .side1 {
@@ -28,6 +34,8 @@
   left: 102px;
   top: 43px;
   opacity: 0.6;
+  box-shadow: 0px 0px 0px 0px var(--cube-shadow-color);
+  transition: box-shadow 0.5s ease-in-out;
 }
 
 .side2 {
@@ -38,6 +46,8 @@
   position: absolute;
   top: 43px;
   opacity: 0.6;
+  box-shadow: 0px 0px 0px 0px var(--cube-shadow-color);
+  transition: box-shadow 0.5s ease-in-out;
 }
 
 /* Cube side style when turned "on" */
@@ -48,9 +58,11 @@
 /* Cube side style when it's the player's turn */
 .player {
   cursor: pointer;
+  box-shadow: 0px 0px 5px 2.5px var(--cube-shadow-color);
+  transition: box-shadow 0.5s ease-in-out;
 }
 
 /* Cuber container style when it's the player turn */
 .player-cube {
-  border: 1px solid red;
+  /* border: 1px solid red; */
 }

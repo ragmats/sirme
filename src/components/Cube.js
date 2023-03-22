@@ -47,7 +47,7 @@ export default function Cube({
       "side1 player",
       "side2 player",
     ];
-    const basePlayerCubeClass = "cube player-cube";
+    const basePlayerCubeClass = "cube player-cube"; // TODO Remove this?
 
     // Check if side classes are bases classes
     const computerSideClassesAreBase = sideClasses.every(
@@ -292,8 +292,8 @@ export default function Cube({
             <button onClick={() => restartSamePlayer()}>
               Retry as{" "}
               {playerName.length > 12
-                ? playerName.toLowerCase().substring(0, 12) + "..."
-                : playerName.toLowerCase()}
+                ? playerName.substring(0, 12) + "..."
+                : playerName}
               ?
             </button>
             <button onClick={() => restartNewPlayer()}>
