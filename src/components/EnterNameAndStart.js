@@ -36,9 +36,6 @@ export default function EnterNameAndStart({
 
   return (
     <>
-      {/* <Button variant="primary" onClick={handleShow}>
-        Launch static backdrop modal
-      </Button> */}
       <Modal
         show={show}
         onHide={handleClose}

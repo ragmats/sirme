@@ -10,6 +10,7 @@ export default function HighScores({
   clearHighScores,
   disableButtonsDuringComputerMoves,
   gameOver,
+  togglePlayerBusy,
 }) {
   const [areYouSure, setAreYouSure] = useState(false);
   const [show, setShow] = useState(false);
@@ -17,11 +18,13 @@ export default function HighScores({
   const handleClose = () => {
     setAreYouSure(false);
     setShow(false);
+    togglePlayerBusy();
   };
   const handleShow = (e) => {
     setShow(true);
     // Remove focus from the "high Scores" button clicked to open the modal
     e.target.blur();
+    togglePlayerBusy();
   };
   function handleYes() {
     clearHighScores();

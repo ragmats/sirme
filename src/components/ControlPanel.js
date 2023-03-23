@@ -12,6 +12,7 @@ export default function ControlPanel({
   toggleAreYouSure,
   gameOver,
   handleQuit,
+  togglePlayerBusy,
 }) {
   return (
     <>
@@ -25,7 +26,7 @@ export default function ControlPanel({
       <br />
       <button
         className="right-menu-button"
-        disabled={disableButtonsDuringComputerMoves ? true : false}
+        disabled={disableButtonsDuringComputerMoves && !gameOver ? true : false}
         onClick={handleRestart}
       >
         Restart
@@ -39,6 +40,7 @@ export default function ControlPanel({
         toggleAreYouSure={toggleAreYouSure}
         disableButtonsDuringComputerMoves={disableButtonsDuringComputerMoves}
         gameOver={gameOver}
+        togglePlayerBusy={togglePlayerBusy}
       />
       <br />
       <button
@@ -53,6 +55,7 @@ export default function ControlPanel({
       <Info
         disableButtonsDuringComputerMoves={disableButtonsDuringComputerMoves}
         gameOver={gameOver}
+        togglePlayerBusy={togglePlayerBusy}
       />
     </>
   );

@@ -7,6 +7,7 @@
 - How to import custom fonts into React.
 - Using Local Storage
 - Learned how to use setTimeout in a sequence
+- How to handle audio playing rapidly
 
 # Getting Started with Create React App
 

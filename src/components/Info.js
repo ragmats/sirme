@@ -5,14 +5,19 @@ import Modal from "react-bootstrap/Modal";
 export default function HighScores({
   disableButtonsDuringComputerMoves,
   gameOver,
+  togglePlayerBusy,
 }) {
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    togglePlayerBusy();
+  };
   const handleShow = (e) => {
     setShow(true);
     // Remove focus from the "info" button clicked to open the modal
     e.target.blur();
+    togglePlayerBusy();
   };
 
   return (
@@ -43,7 +48,7 @@ export default function HighScores({
 
             <h3>Etc.</h3>
             <p>
-              SIRME was created in React in March 2023. See more web dev
+              SIRME was created in React in March 2023. Find more web dev
               projects at{" "}
               <a target="_blank" href="https://stevencoy.com">
                 stevencoy.com

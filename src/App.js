@@ -1,24 +1,17 @@
-// import logo from './logo.svg';
 import { useEffect, useState } from "react";
 import "./App.css";
 import { v4 as uuidv4 } from "uuid";
 import Cube from "./components/Cube";
 import Start from "./components/EnterNameAndStart";
-import HighScores from "./components/HighScores";
-import Button from "react-bootstrap/Button";
 import InfoPanel from "./components/InfoPanel";
 import ControlPanel from "./components/ControlPanel";
 import ScoreMessage from "./components/ScoreMessage";
 
-// TODO Reduce flickering of Personal Best message -- possibly have a state that only changes if this changes, not getting checked every score change. Maybe call it "scoreMessage"
-
-// TODO move left and right panels into their own components - is there an easier way to set states of other components other than props? useContext?
-// TODO Add cool styling to buttons
-// TODO Add cool styling to flashing sides
-// TODO Add cool styling to player turn behind cube?
-// TODO Add link to website?
-// TODO Possibly move retry/quit buttons from Cube to here. Should it be a GameOver component?
-// TODO Emris' suggestion: add WAD and Arrow controls for move inputs
+// TODO Button to speed up computer? Like a fast-forward?
+// TODO Reduce flickering of Personal Best message
+// TODO Optimize audio fast player moves
+// TODO Add styling to gameOver buttons
+// TODO Add something to gameOver? Have Emris draw something?
 
 export default function App() {
   const [endGame, setEndGame] = useState(true);
@@ -49,6 +42,7 @@ export default function App() {
       : []
   );
   const [personalBest, setPersonalBest] = useState(null);
+  const [playerBusy, setPlayerBusy] = useState(false);
 
   /*
    * Resets when endGame ends or begins
@@ -195,6 +189,10 @@ export default function App() {
     setGameOver(!gameOver);
   }
 
+  function togglePlayerBusy() {
+    setPlayerBusy(!playerBusy);
+  }
+
   // Check if user is already in highscores
   function playerFound() {
     const playerFound = highScores.some(
@@ -314,6 +312,7 @@ export default function App() {
               gameOver={gameOver}
               toggleGameOver={toggleGameOver}
               quit={quit}
+              playerBusy={playerBusy}
             />
             <ScoreMessage
               gameOver={gameOver}
@@ -334,6 +333,7 @@ export default function App() {
               clearHighScores={clearHighScores}
               gameOver={gameOver}
               handleQuit={handleQuit}
+              togglePlayerBusy={togglePlayerBusy}
             />
           </div>
         </div>

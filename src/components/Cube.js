@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import "../CSS/Cube.css";
-import tone0 from "../audio/tone0.mp3";
-import tone1 from "../audio/tone1.mp3";
-import tone2 from "../audio/tone2.mp3";
+import useSound from "use-sound";
+import sound0 from "../audio/sound0.mp3";
+import sound1 from "../audio/sound1.mp3";
+import sound2 from "../audio/sound2.mp3";
 
 export default function Cube({
   playerName,
@@ -18,23 +19,31 @@ export default function Cube({
   gameOver,
   toggleGameOver,
   quit,
+  playerBusy,
 }) {
-  const onSeconds = 0.3;
+  const onSeconds = 0.25;
   const playerOnSeconds = 0.15;
   const offSeconds = 0.25;
   const waitSeconds = 1;
-  const sounds = [new Audio(tone0), new Audio(tone1), new Audio(tone2)];
 
+  // const [sounds, setSounds] = useState([
+  //   new Audio(sound0),
+  //   new Audio(sound1),
+  //   new Audio(sound2),
+  // ]);
   const [computerTurn, setComputerTurn] = useState(false);
   const [playerTurn, setPlayerTurn] = useState(false);
   const [computerMoves, setComputerMoves] = useState([]);
   const [playerMoves, setPlayerMoves] = useState([]);
   const [sideClasses, setSideClasses] = useState(["side0", "side1", "side2"]);
   const [cubeClass, setCubeClass] = useState("cube");
-
-  // ? Make a state computerClassBase and playerClassBase
   const [computerClassBase, setComputerClassBase] = useState(false);
   const [playerClassBase, setPlayerClassBase] = useState(false);
+
+  // Ref: https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
+  const [soundEffect0] = useSound(sound0);
+  const [soundEffect1] = useSound(sound1);
+  const [soundEffect2] = useSound(sound2);
 
   /*
    * Resets when classes change and detects whe base classes have been set
@@ -147,10 +156,31 @@ export default function Cube({
    */
   useEffect(() => {
     // Change styling of the cube and sides for the player turn
-    if (playerTurn) {
-      applyPlayerTurnStyles();
-    }
+    if (playerTurn) applyPlayerTurnStyles();
+    // Listen for keypresses
+    window.addEventListener("keydown", downHandler);
+    // Clean up keypress listener
+    return () => window.removeEventListener("keydown", downHandler);
   }, [playerTurn]);
+
+  /*
+   * Resets when it's the player's turn and player is not busy (looking at a modal, etc.)
+   */
+  useEffect(() => {
+    // Listen for keypresses
+    window.addEventListener("keydown", downHandler);
+    // Clean up keypress listener
+    return () => window.removeEventListener("keydown", downHandler);
+  }, [playerTurn, playerBusy]);
+
+  function downHandler({ key }) {
+    // console.log({ key });
+    if (playerTurn && !playerBusy) {
+      if (key === "w" || key === "W" || key === "ArrowUp") addPlayerMove(0);
+      if (key === "a" || key === "A" || key === "ArrowLeft") addPlayerMove(2);
+      if (key === "d" || key === "D" || key === "ArrowRight") addPlayerMove(1);
+    }
+  }
 
   /*
    * Resets when the player makes a move
@@ -226,10 +256,6 @@ export default function Cube({
     setCubeClass("cube player-cube");
   }
 
-  function restartSamePlayer() {
-    handleRestart();
-  }
-
   function restartNewPlayer() {
     handleEndGame();
     setPlayerMoves([]);
@@ -239,7 +265,9 @@ export default function Cube({
   function turnPlayerSideOn(playerSide) {
     sideClasses[playerSide] = sideClasses[playerSide] + " on";
     setSideClasses([...sideClasses]);
-    sounds[playerSide].play();
+    if (playerSide == 0) soundEffect0();
+    if (playerSide == 1) soundEffect1();
+    if (playerSide == 2) soundEffect2();
     setTimeout(() => turnPlayerSideOff(playerSide), 1000 * playerOnSeconds);
   }
 
@@ -255,7 +283,9 @@ export default function Cube({
       const side = computerMoves[moveIdx];
       sideClasses[side] = sideClasses[side] + " on";
       setSideClasses([...sideClasses]);
-      sounds[side].play();
+      if (side == 0) soundEffect0();
+      if (side == 1) soundEffect1();
+      if (side == 2) soundEffect2();
       setTimeout(() => turnSideOff(moveIdx), 1000 * onSeconds);
     }
   }
@@ -273,7 +303,6 @@ export default function Cube({
       setComputerTurn(false);
       toggleDisableButtonsDuringComputerMoves(false);
       setPlayerTurn(true);
-      // if (repeat) toggleRepeat();
     }
   }
 
@@ -289,16 +318,6 @@ export default function Cube({
         {gameOver ? (
           <div>
             <p>Game over, man!</p>
-            <button onClick={() => restartSamePlayer()}>
-              Retry as{" "}
-              {playerName.length > 12
-                ? playerName.substring(0, 12) + "..."
-                : playerName}
-              ?
-            </button>
-            <button onClick={() => restartNewPlayer()}>
-              Play as someone else?
-            </button>
           </div>
         ) : (
           <div>
@@ -320,7 +339,6 @@ export default function Cube({
           </div>
         )}
       </div>
-      {/* <button onClick={cheat}>cheat</button> */}
     </div>
   );
 }
