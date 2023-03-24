@@ -25,8 +25,8 @@ export default function HighScoresTable({ highScores, playerName }) {
                   <td>{idx + 1}</td>
                   {/* <td className="highscore-name">{name.toLowerCase()}</td> */}
                   <td className="highscore-name">
-                    {name.length > 12
-                      ? name.toLowerCase().substring(0, 12) + "..."
+                    {name.length > 8
+                      ? name.toLowerCase().substring(0, 8) + "..."
                       : name.toLowerCase()}
                   </td>
                   <td>{score}</td>

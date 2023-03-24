@@ -13,9 +13,24 @@ export default function ControlPanel({
   gameOver,
   handleQuit,
   togglePlayerBusy,
+  computerSpeed,
+  toggleComputerSpeed,
 }) {
   return (
     <>
+      <button
+        className="right-menu-button"
+        disabled={disableButtonsDuringComputerMoves ? true : false}
+        onClick={toggleComputerSpeed}
+      >
+        {computerSpeed === 0
+          ? "Speed >>"
+          : computerSpeed === 1
+          ? "Speed >>>"
+          : computerSpeed === -1
+          ? "Speed >"
+          : null}
+      </button>
       <button
         className="right-menu-button"
         disabled={disableButtonsDuringComputerMoves ? true : false}
@@ -23,7 +38,6 @@ export default function ControlPanel({
       >
         Repeat
       </button>
-      <br />
       <button
         className="right-menu-button"
         disabled={disableButtonsDuringComputerMoves && !gameOver ? true : false}
@@ -31,7 +45,6 @@ export default function ControlPanel({
       >
         Restart
       </button>
-      <br />
       <HighScores
         playerName={playerName}
         highScores={highScores}
@@ -42,7 +55,6 @@ export default function ControlPanel({
         gameOver={gameOver}
         togglePlayerBusy={togglePlayerBusy}
       />
-      <br />
       <button
         className="right-menu-button"
         disabled={disableButtonsDuringComputerMoves && !gameOver ? true : false}
@@ -50,7 +62,6 @@ export default function ControlPanel({
       >
         Quit
       </button>
-      <br />
 
       <Info
         disableButtonsDuringComputerMoves={disableButtonsDuringComputerMoves}

@@ -1,3 +1,61 @@
+:root {
+  /*
+  * Original styles
+   */
+  /* --body-background-color: rgb(204, 207, 207);
+  --body-text-color: black;
+  --title-name-buttons-color: red;
+  --main-buttons-hover-background-color: yellow;
+  --main-buttons-hover-text-color: red;
+  --main-buttons-disabled-color: rgb(255, 150, 150);
+  --cube-side0-color: red;
+  --cube-side1-color: green;
+  --cube-side2-color: blue;
+  --cube-shadow-color: yellow; */
+
+  /*
+  * Retro styles
+   */
+  /* --body-background-color: #ece6c2;
+  --body-text-color: black;
+  --title-name-buttons-color: #cc5d49;
+  --main-buttons-hover-background-color: #d2a24c;
+  --main-buttons-hover-text-color: #cc1f01;
+  --main-buttons-disabled-color: #e7c5b2;
+  --cube-side0-color: #cc5d49;
+  --cube-side1-color: rgb(122, 160, 62);
+  --cube-side2-color: #73bda8;
+  --cube-shadow-color: cyan; */
+
+  /*
+  * New style
+   */
+  --body-background-color: #d5f5fc;
+  --body-text-color: black;
+  --title-name-buttons-color: red;
+  --main-buttons-hover-background-color: yellow;
+  --main-buttons-hover-text-color: red;
+  --main-buttons-disabled-color: rgb(255, 150, 150);
+  --cube-side0-color: red;
+  --cube-side1-color: green;
+  --cube-side2-color: blue;
+  --cube-shadow-color: yellow;
+
+  /*
+  * Dark
+   */
+  /* --body-background-color: #212525;
+  --body-text-color: #cbe4de;
+  --title-name-buttons-color: #0e8388;
+  --main-buttons-hover-background-color: #f9d923;
+  --main-buttons-hover-text-color: #b25068;
+  --main-buttons-disabled-color: rgb(255, 150, 150);
+  --cube-side0-color: red;
+  --cube-side1-color: green;
+  --cube-side2-color: blue;
+  --cube-shadow-color: yellow; */
+}
+
 * {
   box-sizing: border-box;
 }
@@ -5,12 +63,13 @@
 body {
   margin: 0px;
   height: 100vh;
-  background-color: rgb(204, 207, 207);
+  background-color: var(--body-background-color);
   /* background: radial-gradient(rgb(233, 255, 255), rgb(82, 82, 82)); */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   font-size: 1.25rem;
+  color: var(--body-text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

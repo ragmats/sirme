@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import "../CSS/Cube.css";
 import useSound from "use-sound";
+import sadFace from "../images/sadface.svg";
 import sound0 from "../audio/sound0.mp3";
 import sound1 from "../audio/sound1.mp3";
 import sound2 from "../audio/sound2.mp3";
+import soundBadMove from "../audio/soundBadMove.mp3";
 
 export default function Cube({
-  playerName,
   computerStart,
   restart,
   handleEndGame,
-  handleRestart,
   repeat,
   toggleRepeat,
   toggleDisableButtonsDuringComputerMoves,
@@ -18,20 +18,19 @@ export default function Cube({
   addPoint,
   gameOver,
   toggleGameOver,
+  handleRestart,
   quit,
   playerBusy,
+  computerSpeed,
 }) {
-  const onSeconds = 0.25;
+  // const computerOnSeconds = 0.25;
   const playerOnSeconds = 0.15;
-  const offSeconds = 0.25;
+  // const computerOffSeconds = 0.25;
   const waitSeconds = 1;
 
-  // const [sounds, setSounds] = useState([
-  //   new Audio(sound0),
-  //   new Audio(sound1),
-  //   new Audio(sound2),
-  // ]);
   const [computerTurn, setComputerTurn] = useState(false);
+  const [computerOnSeconds, setComputerOnSeconds] = useState(0.25);
+  const [computerOffSeconds, setComputerOffSeconds] = useState(0.25);
   const [playerTurn, setPlayerTurn] = useState(false);
   const [computerMoves, setComputerMoves] = useState([]);
   const [playerMoves, setPlayerMoves] = useState([]);
@@ -44,6 +43,8 @@ export default function Cube({
   const [soundEffect0] = useSound(sound0);
   const [soundEffect1] = useSound(sound1);
   const [soundEffect2] = useSound(sound2);
+  const [soundEffectBadMove] = useSound(soundBadMove);
+  const soundEffects = [soundEffect0, soundEffect1, soundEffect2];
 
   /*
    * Resets when classes change and detects whe base classes have been set
@@ -121,6 +122,24 @@ export default function Cube({
   }, [computerTurn]);
 
   /*
+   * Resets if player clicks the speed button
+   */
+  useEffect(() => {
+    if (computerSpeed === 0) {
+      setComputerOnSeconds(0.25);
+      setComputerOffSeconds(0.25);
+    }
+    if (computerSpeed === 1) {
+      setComputerOnSeconds(0.15);
+      setComputerOffSeconds(0.15);
+    }
+    if (computerSpeed === -1) {
+      setComputerOnSeconds(0.35);
+      setComputerOffSeconds(0.35);
+    }
+  }, [computerSpeed]);
+
+  /*
    * Resets after user resets current game
    */
   useEffect(() => {
@@ -179,6 +198,8 @@ export default function Cube({
       if (key === "w" || key === "W" || key === "ArrowUp") addPlayerMove(0);
       if (key === "a" || key === "A" || key === "ArrowLeft") addPlayerMove(2);
       if (key === "d" || key === "D" || key === "ArrowRight") addPlayerMove(1);
+    } else if (gameOver && !playerBusy) {
+      if (key === "r" || key === "R") handleRestart();
     }
   }
 
@@ -194,6 +215,7 @@ export default function Cube({
 
       if (playerMove === computerMove) {
         // console.log("You get a point!");
+        soundEffects[playerMove]();
         addPoint();
         // Compare player moves to computer moves and advance to next round if fully matched
         if (playerMoves.length === computerMoves.length) {
@@ -203,7 +225,10 @@ export default function Cube({
         }
       } else {
         // console.log("You lose!");
-        setTimeout(() => toggleGameOver(), 1000 * playerOnSeconds);
+        soundEffectBadMove();
+        setTimeout(() => {
+          toggleGameOver();
+        }, 1000 * playerOnSeconds);
         toggleDisableButtonsDuringComputerMoves(true);
       }
     }
@@ -265,9 +290,6 @@ export default function Cube({
   function turnPlayerSideOn(playerSide) {
     sideClasses[playerSide] = sideClasses[playerSide] + " on";
     setSideClasses([...sideClasses]);
-    if (playerSide == 0) soundEffect0();
-    if (playerSide == 1) soundEffect1();
-    if (playerSide == 2) soundEffect2();
     setTimeout(() => turnPlayerSideOff(playerSide), 1000 * playerOnSeconds);
   }
 
@@ -283,10 +305,8 @@ export default function Cube({
       const side = computerMoves[moveIdx];
       sideClasses[side] = sideClasses[side] + " on";
       setSideClasses([...sideClasses]);
-      if (side == 0) soundEffect0();
-      if (side == 1) soundEffect1();
-      if (side == 2) soundEffect2();
-      setTimeout(() => turnSideOff(moveIdx), 1000 * onSeconds);
+      soundEffects[side]();
+      setTimeout(() => turnSideOff(moveIdx), 1000 * computerOnSeconds);
     }
   }
 
@@ -298,7 +318,7 @@ export default function Cube({
 
     // If not the last move, blink the next side after a short time
     if (moveIdx < computerMoves.length - 1) {
-      setTimeout(() => turnSideOn(moveIdx + 1), 1000 * offSeconds);
+      setTimeout(() => turnSideOn(moveIdx + 1), 1000 * computerOffSeconds);
     } else {
       setComputerTurn(false);
       toggleDisableButtonsDuringComputerMoves(false);
@@ -314,12 +334,14 @@ export default function Cube({
 
   return (
     <div>
-      <div className={cubeClass}>
-        {gameOver ? (
-          <div>
-            <p>Game over, man!</p>
-          </div>
-        ) : (
+      {gameOver ? (
+        <div className="game-over">
+          <img className="game-over-svg" src={sadFace}></img>
+          <span>Game over, man!</span>
+          <span>(R to restart)</span>
+        </div>
+      ) : (
+        <div className={cubeClass}>
           <div>
             <div
               id="0"
@@ -337,8 +359,8 @@ export default function Cube({
               className={sideClasses[2]}
             ></div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,11 +7,11 @@ import InfoPanel from "./components/InfoPanel";
 import ControlPanel from "./components/ControlPanel";
 import ScoreMessage from "./components/ScoreMessage";
 
-// TODO Button to speed up computer? Like a fast-forward?
+// TODO Play with colors
+// TODO make modals nice
 // TODO Reduce flickering of Personal Best message
-// TODO Optimize audio fast player moves
-// TODO Add styling to gameOver buttons
-// TODO Add something to gameOver? Have Emris draw something?
+// TODO make mobile responsive
+// TODO favicon
 
 export default function App() {
   const [endGame, setEndGame] = useState(true);
@@ -43,6 +43,7 @@ export default function App() {
   );
   const [personalBest, setPersonalBest] = useState(null);
   const [playerBusy, setPlayerBusy] = useState(false);
+  const [computerSpeed, setComputerSpeed] = useState(0);
 
   /*
    * Resets when endGame ends or begins
@@ -138,6 +139,7 @@ export default function App() {
     setRepeats(0);
     setEndGame(true);
     setGameOver(false);
+    setComputerSpeed(0);
   }
 
   function handleRestart() {
@@ -191,6 +193,12 @@ export default function App() {
 
   function togglePlayerBusy() {
     setPlayerBusy(!playerBusy);
+  }
+
+  function toggleComputerSpeed() {
+    if (computerSpeed === 0) setComputerSpeed(1);
+    if (computerSpeed === 1) setComputerSpeed(-1);
+    if (computerSpeed === -1) setComputerSpeed(0);
   }
 
   // Check if user is already in highscores
@@ -285,7 +293,7 @@ export default function App() {
         <h1>sirme</h1>
         <h4>a Simon game</h4>
         <div className="main">
-          <div className="main-inside">
+          <div className="info-panel">
             <InfoPanel
               playerName={playerName}
               round={round}
@@ -295,13 +303,11 @@ export default function App() {
               playerRank={playerRank}
             />
           </div>
-          <div className="main-inside">
+          <div className="cube-panel">
             <Cube
-              playerName={playerName}
               computerStart={computerStart}
               restart={restart}
               handleEndGame={handleEndGame}
-              handleRestart={handleRestart}
               repeat={repeat}
               toggleRepeat={toggleRepeat}
               toggleDisableButtonsDuringComputerMoves={
@@ -311,8 +317,10 @@ export default function App() {
               addPoint={addPoint}
               gameOver={gameOver}
               toggleGameOver={toggleGameOver}
+              handleRestart={handleRestart}
               quit={quit}
               playerBusy={playerBusy}
+              computerSpeed={computerSpeed}
             />
             <ScoreMessage
               gameOver={gameOver}
@@ -321,7 +329,7 @@ export default function App() {
               playerRank={playerRank}
             />
           </div>
-          <div className="main-inside">
+          <div className="control-panel">
             <ControlPanel
               disableButtonsDuringComputerMoves={
                 disableButtonsDuringComputerMoves
@@ -334,6 +342,8 @@ export default function App() {
               gameOver={gameOver}
               handleQuit={handleQuit}
               togglePlayerBusy={togglePlayerBusy}
+              computerSpeed={computerSpeed}
+              toggleComputerSpeed={toggleComputerSpeed}
             />
           </div>
         </div>

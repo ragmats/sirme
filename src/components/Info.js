@@ -23,11 +23,11 @@ export default function HighScores({
   return (
     <>
       <button
-        className="info-button"
+        className="right-menu-button"
         onClick={(e) => handleShow(e)}
         disabled={disableButtonsDuringComputerMoves && !gameOver ? true : false}
       >
-        i
+        Info
       </button>
 
       <Modal show={show} onHide={handleClose} centered>
