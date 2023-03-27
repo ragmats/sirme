@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
 export default function EnterNameAndStart({
-  startGame,
+  setEndGame,
   setPlayerName,
   defaultName,
   playerName,
@@ -21,7 +21,7 @@ export default function EnterNameAndStart({
 
   const handleClose = () => {
     setShow(false);
-    startGame();
+    setEndGame(false);
   };
 
   function submitForm(e) {

@@ -8,8 +8,6 @@ import ControlPanel from "./components/ControlPanel";
 import ScoreMessage from "./components/ScoreMessage";
 import { ThemeContext } from "./contexts/ThemeContext";
 
-// TODO cleanup code, removing functions that simple set state -- send the setters instead
-
 export default function App() {
   const [endGame, setEndGame] = useState(true);
   const [computerStart, setComputerStart] = useState(false);
@@ -73,6 +71,9 @@ export default function App() {
     { name: "--cube-shadow-color", color: "white" },
   ];
 
+  /*
+   * Resets when theme changes, resetting select CSS variables
+   */
   useEffect(() => {
     // Save theme to local storage
     localStorage.setItem("theme", theme);
@@ -159,14 +160,14 @@ export default function App() {
   }, [playerRank]);
 
   /*
-   * Resets when restart button is pressed, toggles back to false
+   * Resets when restart button is pressed
    */
   useEffect(() => {
     if (restart) setRestart(false);
   }, [restart]);
 
   /*
-   * Resets when quit button is pressed, toggles back to false
+   * Resets when quit button is pressed
    */
   useEffect(() => {
     if (quit) setQuit(false);
@@ -178,10 +179,6 @@ export default function App() {
   useEffect(() => {
     setScore(points - repeats);
   }, [points, repeats]);
-
-  function startGame() {
-    setEndGame(false);
-  }
 
   function handleEndGame() {
     setRound(1);
@@ -200,41 +197,9 @@ export default function App() {
     setRestart(true);
   }
 
-  function handleQuit() {
-    setQuit(true);
-  }
-
-  function toggleDisableButtonsDuringComputerMoves(isDisabled) {
-    setDisableButtonsDuringComputerMoves(isDisabled);
-  }
-
-  function advanceRound() {
-    setRound((currentRound) => currentRound + 1);
-  }
-
-  function addPoint() {
-    setPoints((currentPoints) => currentPoints + 1);
-  }
-
   function repeatComputer() {
     setRepeat(true);
-    addRepeat();
-  }
-
-  function addRepeat() {
     setRepeats((currentRepeats) => currentRepeats + 1);
-  }
-
-  function toggleRepeat() {
-    setRepeat(!repeat);
-  }
-
-  function toggleGameOver() {
-    setGameOver(!gameOver);
-  }
-
-  function togglePlayerBusy() {
-    setPlayerBusy(!playerBusy);
   }
 
   function toggleComputerSpeed() {
@@ -331,7 +296,7 @@ export default function App() {
         <div className="app-main">
           {endGame ? (
             <Start
-              startGame={startGame}
+              setEndGame={setEndGame}
               setPlayerName={setPlayerName}
               defaultName={defaultName}
               playerName={playerName}
@@ -355,14 +320,14 @@ export default function App() {
                   restart={restart}
                   handleEndGame={handleEndGame}
                   repeat={repeat}
-                  toggleRepeat={toggleRepeat}
-                  toggleDisableButtonsDuringComputerMoves={
-                    toggleDisableButtonsDuringComputerMoves
+                  setRepeat={setRepeat}
+                  setDisableButtonsDuringComputerMoves={
+                    setDisableButtonsDuringComputerMoves
                   }
-                  advanceRound={advanceRound}
-                  addPoint={addPoint}
+                  setRound={setRound}
+                  setPoints={setPoints}
                   gameOver={gameOver}
-                  toggleGameOver={toggleGameOver}
+                  setGameOver={setGameOver}
                   handleRestart={handleRestart}
                   quit={quit}
                   playerBusy={playerBusy}
@@ -386,8 +351,8 @@ export default function App() {
                   highScores={highScores}
                   clearHighScores={clearHighScores}
                   gameOver={gameOver}
-                  handleQuit={handleQuit}
-                  togglePlayerBusy={togglePlayerBusy}
+                  setQuit={setQuit}
+                  setPlayerBusy={setPlayerBusy}
                   computerSpeed={computerSpeed}
                   toggleComputerSpeed={toggleComputerSpeed}
                 />

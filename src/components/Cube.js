@@ -12,12 +12,12 @@ export default function Cube({
   restart,
   handleEndGame,
   repeat,
-  toggleRepeat,
-  toggleDisableButtonsDuringComputerMoves,
-  advanceRound,
-  addPoint,
+  setRepeat,
+  setDisableButtonsDuringComputerMoves,
+  setRound,
+  setPoints,
   gameOver,
-  toggleGameOver,
+  setGameOver,
   handleRestart,
   quit,
   playerBusy,
@@ -84,9 +84,9 @@ export default function Cube({
   useEffect(() => {
     // Once repeat is on and base computer classes confirmed, then repeat the sequence
     if (repeat && computerClassBase) {
-      toggleRepeat();
+      setRepeat(false);
       setPlayerTurn(false);
-      toggleDisableButtonsDuringComputerMoves(true);
+      setDisableButtonsDuringComputerMoves(true);
       setTimeout(() => turnSideOn(0), 1000 * waitSeconds);
     }
   }, [computerClassBase, playerClassBase]);
@@ -152,7 +152,7 @@ export default function Cube({
    * Resets when a new random computer move is added or moves are reset
    */
   useEffect(() => {
-    toggleDisableButtonsDuringComputerMoves(true);
+    setDisableButtonsDuringComputerMoves(true);
     // Start "flashing" the sides, starting with move at index 0
     setTimeout(() => turnSideOn(0), 1000 * waitSeconds);
   }, [computerMoves]);
@@ -216,20 +216,20 @@ export default function Cube({
       if (playerMove === computerMove) {
         // console.log("You get a point!");
         soundEffects[playerMove]();
-        addPoint();
+        setPoints((currentPoints) => currentPoints + 1);
         // Compare player moves to computer moves and advance to next round if fully matched
         if (playerMoves.length === computerMoves.length) {
           // console.log("Next round!");
-          advanceRound();
+          setRound((currentRound) => currentRound + 1);
           setTimeout(() => endPlayerTurn(), 1000 * playerOnSeconds);
         }
       } else {
         // console.log("You lose!");
         soundEffectBadMove();
         setTimeout(() => {
-          toggleGameOver();
+          setGameOver(true);
         }, 1000 * playerOnSeconds);
-        toggleDisableButtonsDuringComputerMoves(true);
+        setDisableButtonsDuringComputerMoves(true);
       }
     }
   }, [playerMoves]);
@@ -327,7 +327,7 @@ export default function Cube({
       setTimeout(() => turnSideOn(moveIdx + 1), 1000 * computerOffSeconds);
     } else {
       setComputerTurn(false);
-      toggleDisableButtonsDuringComputerMoves(false);
+      setDisableButtonsDuringComputerMoves(false);
       setPlayerTurn(true);
     }
   }

@@ -6,19 +6,19 @@ import { ThemeContext } from "../contexts/ThemeContext";
 export default function HighScores({
   disableButtonsDuringComputerMoves,
   gameOver,
-  togglePlayerBusy,
+  setPlayerBusy,
 }) {
   const [show, setShow] = useState(false);
 
   const handleClose = () => {
     setShow(false);
-    togglePlayerBusy();
+    setPlayerBusy(false);
   };
   const handleShow = (e) => {
     setShow(true);
     // Remove focus from the "info" button clicked to open the modal
     e.target.blur();
-    togglePlayerBusy();
+    setPlayerBusy(true);
   };
 
   const { theme } = useContext(ThemeContext);

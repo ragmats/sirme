@@ -13,12 +13,14 @@ export default function ControlPanel({
   areYouSure,
   toggleAreYouSure,
   gameOver,
-  handleQuit,
-  togglePlayerBusy,
+  setQuit,
+  setPlayerBusy,
   computerSpeed,
   toggleComputerSpeed,
 }) {
   const { theme, toggleTheme } = useContext(ThemeContext);
+
+  const handleQuit = () => setQuit(true);
 
   return (
     <>
@@ -60,7 +62,7 @@ export default function ControlPanel({
         toggleAreYouSure={toggleAreYouSure}
         disableButtonsDuringComputerMoves={disableButtonsDuringComputerMoves}
         gameOver={gameOver}
-        togglePlayerBusy={togglePlayerBusy}
+        setPlayerBusy={setPlayerBusy}
       />
       <button
         className="right-menu-button"
@@ -72,6 +74,11 @@ export default function ControlPanel({
       >
         {theme === "light" ? "Dark " : "Light "}Mode
       </button>
+      <Info
+        disableButtonsDuringComputerMoves={disableButtonsDuringComputerMoves}
+        gameOver={gameOver}
+        setPlayerBusy={setPlayerBusy}
+      />
       <button
         className="right-menu-button"
         disabled={disableButtonsDuringComputerMoves && !gameOver ? true : false}
@@ -79,12 +86,6 @@ export default function ControlPanel({
       >
         Quit
       </button>
-
-      <Info
-        disableButtonsDuringComputerMoves={disableButtonsDuringComputerMoves}
-        gameOver={gameOver}
-        togglePlayerBusy={togglePlayerBusy}
-      />
     </>
   );
 }
