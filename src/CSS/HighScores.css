@@ -1,5 +1,4 @@
 .center {
-  /* border: 1px solid red; */
   text-align: center;
 }
 
@@ -8,12 +7,26 @@
   margin-right: 5px;
 }
 
+.highscores-table {
+  width: 100%;
+}
+
+tr:nth-child(even) {
+  background-color: var(--highscores-table-stripe);
+}
+
+td {
+  padding: 5px;
+  padding-bottom: 7px;
+}
+
 .highscore-name {
   font-variant: small-caps;
   font-size: 1.5rem;
   line-height: 1;
 }
 
-.highlighted {
-  background-color: rgba(255, 196, 0, 0.342);
+tr.highlighted {
+  background-color: var(--main-buttons-hover-background-color);
+  color: black;
 }

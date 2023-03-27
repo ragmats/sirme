@@ -6,12 +6,9 @@ import Start from "./components/EnterNameAndStart";
 import InfoPanel from "./components/InfoPanel";
 import ControlPanel from "./components/ControlPanel";
 import ScoreMessage from "./components/ScoreMessage";
+import { ThemeContext } from "./contexts/ThemeContext";
 
-// TODO Play with colors
-// TODO make modals nice
-// TODO Reduce flickering of Personal Best message
-// TODO make mobile responsive
-// TODO favicon
+// TODO cleanup code, removing functions that simple set state -- send the setters instead
 
 export default function App() {
   const [endGame, setEndGame] = useState(true);
@@ -20,7 +17,7 @@ export default function App() {
     disableButtonsDuringComputerMoves,
     setDisableButtonsDuringComputerMoves,
   ] = useState(false);
-  const [defaultName] = useState("Guest Player");
+  const [defaultName] = useState("Guest");
   const [playerName, setPlayerName] = useState(
     localStorage.getItem("playerName")
       ? localStorage.getItem("playerName")
@@ -44,6 +41,59 @@ export default function App() {
   const [personalBest, setPersonalBest] = useState(null);
   const [playerBusy, setPlayerBusy] = useState(false);
   const [computerSpeed, setComputerSpeed] = useState(0);
+  const [theme, setTheme] = useState(
+    localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
+  );
+
+  const lightThemeVariables = [
+    { name: "--body-background-color", color: "#d5f5fc" },
+    { name: "--body-text-color", color: "black" },
+    { name: "--title-name-buttons-color", color: "red" },
+    { name: "--main-buttons-hover-background-color", color: "yellow" },
+    { name: "--main-buttons-hover-text-color", color: "red" },
+    { name: "--main-buttons-disabled-color", color: "rgb(255, 150, 150)" },
+    { name: "--highscores-table-stripe", color: "#c1e6f0" },
+    { name: "--cube-side0-color", color: "red" },
+    { name: "--cube-side1-color", color: "green" },
+    { name: "--cube-side2-color", color: "blue" },
+    { name: "--cube-shadow-color", color: "yellow" },
+  ];
+
+  const darkThemeVariables = [
+    { name: "--body-background-color", color: "#212525" },
+    { name: "--body-text-color", color: "#cbe4de" },
+    { name: "--title-name-buttons-color", color: "#0e8388" },
+    { name: "--main-buttons-hover-background-color", color: "#f9d923" },
+    { name: "--main-buttons-hover-text-color", color: "#b25068" },
+    { name: "--main-buttons-disabled-color", color: "#2a4242" },
+    { name: "--highscores-table-stripe", color: "#303636" },
+    { name: "--cube-side0-color", color: "red" },
+    { name: "--cube-side1-color", color: "green" },
+    { name: "--cube-side2-color", color: "blue" },
+    { name: "--cube-shadow-color", color: "white" },
+  ];
+
+  useEffect(() => {
+    // Save theme to local storage
+    localStorage.setItem("theme", theme);
+    if (theme === "light") {
+      // Set CSS variables for light theme
+      lightThemeVariables.forEach((variable) => {
+        document.documentElement.style.setProperty(
+          variable.name,
+          variable.color
+        );
+      });
+    } else if (theme === "dark") {
+      // Set CSS variables for dark theme
+      darkThemeVariables.forEach((variable) => {
+        document.documentElement.style.setProperty(
+          variable.name,
+          variable.color
+        );
+      });
+    }
+  }, [theme]);
 
   /*
    * Resets when endGame ends or begins
@@ -94,7 +144,7 @@ export default function App() {
   }, [highScores]);
 
   /*
-   * Resets whenever player changes name
+   * Resets whenever the player changes name
    */
   useEffect(() => {
     getCurrentPlayerRank();
@@ -154,14 +204,6 @@ export default function App() {
     setQuit(true);
   }
 
-  function getNewPlayerName(newPlayerName) {
-    if (localStorage.getItem("playerName")) {
-      setPlayerName(localStorage.getItem("playerName"));
-    } else {
-      setPlayerName(newPlayerName);
-    }
-  }
-
   function toggleDisableButtonsDuringComputerMoves(isDisabled) {
     setDisableButtonsDuringComputerMoves(isDisabled);
   }
@@ -199,6 +241,10 @@ export default function App() {
     if (computerSpeed === 0) setComputerSpeed(1);
     if (computerSpeed === 1) setComputerSpeed(-1);
     if (computerSpeed === -1) setComputerSpeed(0);
+  }
+
+  function toggleTheme() {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   }
 
   // Check if user is already in highscores
@@ -280,74 +326,76 @@ export default function App() {
   }
 
   return (
-    <div className="App">
-      {endGame ? (
-        <Start
-          startGame={startGame}
-          getNewPlayerName={getNewPlayerName}
-          defaultName={defaultName}
-          playerName={playerName}
-        />
-      ) : null}
-      <div>
-        <h1>sirme</h1>
-        <h4>a Simon game</h4>
-        <div className="main">
-          <div className="info-panel">
-            <InfoPanel
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      <div className="App" id={theme}>
+        <div className="app-main">
+          {endGame ? (
+            <Start
+              startGame={startGame}
+              setPlayerName={setPlayerName}
+              defaultName={defaultName}
               playerName={playerName}
-              round={round}
-              points={points}
-              repeats={repeats}
-              score={score}
-              playerRank={playerRank}
             />
-          </div>
-          <div className="cube-panel">
-            <Cube
-              computerStart={computerStart}
-              restart={restart}
-              handleEndGame={handleEndGame}
-              repeat={repeat}
-              toggleRepeat={toggleRepeat}
-              toggleDisableButtonsDuringComputerMoves={
-                toggleDisableButtonsDuringComputerMoves
-              }
-              advanceRound={advanceRound}
-              addPoint={addPoint}
-              gameOver={gameOver}
-              toggleGameOver={toggleGameOver}
-              handleRestart={handleRestart}
-              quit={quit}
-              playerBusy={playerBusy}
-              computerSpeed={computerSpeed}
-            />
-            <ScoreMessage
-              gameOver={gameOver}
-              personalBest={personalBest}
-              score={score}
-              playerRank={playerRank}
-            />
-          </div>
-          <div className="control-panel">
-            <ControlPanel
-              disableButtonsDuringComputerMoves={
-                disableButtonsDuringComputerMoves
-              }
-              repeatComputer={repeatComputer}
-              handleRestart={handleRestart}
-              playerName={playerName}
-              highScores={highScores}
-              clearHighScores={clearHighScores}
-              gameOver={gameOver}
-              handleQuit={handleQuit}
-              togglePlayerBusy={togglePlayerBusy}
-              computerSpeed={computerSpeed}
-              toggleComputerSpeed={toggleComputerSpeed}
-            />
+          ) : null}
+          <div>
+            <h1>sirme</h1>
+            <h4>a Simon game</h4>
+            <div className="main">
+              <InfoPanel
+                playerName={playerName}
+                round={round}
+                points={points}
+                repeats={repeats}
+                score={score}
+                playerRank={playerRank}
+              />
+              <div className="cube-panel">
+                <Cube
+                  computerStart={computerStart}
+                  restart={restart}
+                  handleEndGame={handleEndGame}
+                  repeat={repeat}
+                  toggleRepeat={toggleRepeat}
+                  toggleDisableButtonsDuringComputerMoves={
+                    toggleDisableButtonsDuringComputerMoves
+                  }
+                  advanceRound={advanceRound}
+                  addPoint={addPoint}
+                  gameOver={gameOver}
+                  toggleGameOver={toggleGameOver}
+                  handleRestart={handleRestart}
+                  quit={quit}
+                  playerBusy={playerBusy}
+                  computerSpeed={computerSpeed}
+                />
+                <ScoreMessage
+                  gameOver={gameOver}
+                  personalBest={personalBest}
+                  score={score}
+                  playerRank={playerRank}
+                />
+              </div>
+              <div className="control-panel">
+                <ControlPanel
+                  disableButtonsDuringComputerMoves={
+                    disableButtonsDuringComputerMoves
+                  }
+                  repeatComputer={repeatComputer}
+                  handleRestart={handleRestart}
+                  playerName={playerName}
+                  highScores={highScores}
+                  clearHighScores={clearHighScores}
+                  gameOver={gameOver}
+                  handleQuit={handleQuit}
+                  togglePlayerBusy={togglePlayerBusy}
+                  computerSpeed={computerSpeed}
+                  toggleComputerSpeed={toggleComputerSpeed}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ThemeContext.Provider>
   );
 }

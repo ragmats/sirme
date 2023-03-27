@@ -1,5 +1,7 @@
+import { useContext } from "react";
 import HighScores from "./HighScores";
 import Info from "./Info";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 export default function ControlPanel({
   disableButtonsDuringComputerMoves,
@@ -16,12 +18,17 @@ export default function ControlPanel({
   computerSpeed,
   toggleComputerSpeed,
 }) {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
   return (
     <>
       <button
         className="right-menu-button"
         disabled={disableButtonsDuringComputerMoves ? true : false}
-        onClick={toggleComputerSpeed}
+        onClick={(e) => {
+          toggleComputerSpeed();
+          e.target.blur();
+        }}
       >
         {computerSpeed === 0
           ? "Speed >>"
@@ -55,6 +62,16 @@ export default function ControlPanel({
         gameOver={gameOver}
         togglePlayerBusy={togglePlayerBusy}
       />
+      <button
+        className="right-menu-button"
+        disabled={disableButtonsDuringComputerMoves && !gameOver ? true : false}
+        onClick={(e) => {
+          toggleTheme();
+          e.target.blur();
+        }}
+      >
+        {theme === "light" ? "Dark " : "Light "}Mode
+      </button>
       <button
         className="right-menu-button"
         disabled={disableButtonsDuringComputerMoves && !gameOver ? true : false}

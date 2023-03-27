@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import HighScoresTable from "./HighScoresTable";
 import "../CSS/HighScores.css";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 export default function HighScores({
   playerName,
@@ -12,6 +12,7 @@ export default function HighScores({
   gameOver,
   togglePlayerBusy,
 }) {
+  const { theme } = useContext(ThemeContext);
   const [areYouSure, setAreYouSure] = useState(false);
   const [show, setShow] = useState(false);
 
@@ -20,12 +21,14 @@ export default function HighScores({
     setShow(false);
     togglePlayerBusy();
   };
+
   const handleShow = (e) => {
     setShow(true);
     // Remove focus from the "high Scores" button clicked to open the modal
     e.target.blur();
     togglePlayerBusy();
   };
+
   function handleYes() {
     clearHighScores();
     toggleAreYouSure();
@@ -46,7 +49,11 @@ export default function HighScores({
       </button>
 
       <Modal show={show} onHide={handleClose} centered>
-        <Modal.Header closeButton>
+        <Modal.Header
+          closeButton
+          closeVariant={theme === "dark" ? "white" : null}
+        >
+          {/* For dark mode, use closeVariant="white" in above line */}
           <Modal.Title>
             <div className="center">SIRME High Scores</div>
           </Modal.Title>
@@ -73,7 +80,46 @@ export default function HighScores({
               </Button>
             </div>
           ) : (
-            <HighScoresTable highScores={highScores} playerName={playerName} />
+            // <HighScoresTable highScores={highScores} playerName={playerName} />
+            <>
+              {highScores.length > 0 ? (
+                <table className="highscores-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Player</th>
+                      <th>Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {highScores.map(({ id, name, score }, idx) => {
+                      return (
+                        <tr
+                          className={
+                            playerName.toLowerCase() === name
+                              ? "highlighted"
+                              : null
+                          }
+                          key={id}
+                        >
+                          <td>{idx + 1}</td>
+                          <td className="highscore-name">
+                            {name.length > 8
+                              ? name.toLowerCase().substring(0, 8) + "..."
+                              : name.toLowerCase()}
+                          </td>
+                          <td>{score}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="center">
+                  No high scores yet... be the first!
+                </div>
+              )}
+            </>
           )}
         </Modal.Body>
         <Modal.Footer>

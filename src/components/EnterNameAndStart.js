@@ -4,7 +4,7 @@ import Modal from "react-bootstrap/Modal";
 
 export default function EnterNameAndStart({
   startGame,
-  getNewPlayerName,
+  setPlayerName,
   defaultName,
   playerName,
 }) {
@@ -26,7 +26,7 @@ export default function EnterNameAndStart({
 
   function submitForm(e) {
     e.preventDefault();
-    getNewPlayerName(name);
+    setPlayerName(name);
     handleClose();
   }
 
@@ -42,28 +42,30 @@ export default function EnterNameAndStart({
         backdrop="static"
         keyboard={false}
         centered
+        size="sm"
       >
-        <Modal.Header>
-          <Modal.Title>Enter Player Name & Click Start</Modal.Title>
-        </Modal.Header>
         <Modal.Body>
           <form onSubmit={(e) => submitForm(e)} id="submitName">
-            <input
-              autoFocus
-              onFocus={(e) => e.currentTarget.select()}
-              // Ref: https://stackoverflow.com/questions/28889826/how-to-set-focus-on-an-input-field-after-rendering
-              ref={function (input) {
-                if (input != null) input.focus();
-              }}
-              placeholder={defaultName}
-              value={name}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") clearName();
-              }}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
+            <div className="input-container">
+              <p className="name-input-text">Enter Player Name</p>
+              <input
+                className="name-input"
+                autoFocus
+                onFocus={(e) => e.currentTarget.select()}
+                // Ref: https://stackoverflow.com/questions/28889826/how-to-set-focus-on-an-input-field-after-rendering
+                ref={function (input) {
+                  if (input != null) input.focus();
+                }}
+                placeholder={defaultName}
+                value={name}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") clearName();
+                }}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+            </div>
           </form>
         </Modal.Body>
         <Modal.Footer>

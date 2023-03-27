@@ -23,9 +23,7 @@ export default function Cube({
   playerBusy,
   computerSpeed,
 }) {
-  // const computerOnSeconds = 0.25;
   const playerOnSeconds = 0.15;
-  // const computerOffSeconds = 0.25;
   const waitSeconds = 1;
 
   const [computerTurn, setComputerTurn] = useState(false);
@@ -47,7 +45,7 @@ export default function Cube({
   const soundEffects = [soundEffect0, soundEffect1, soundEffect2];
 
   /*
-   * Resets when classes change and detects whe base classes have been set
+   * Resets when classes change and detects when base classes have been set
    */
   useEffect(() => {
     const baseComputerSideClasses = ["side0", "side1", "side2"];
@@ -57,7 +55,7 @@ export default function Cube({
       "side1 player",
       "side2 player",
     ];
-    const basePlayerCubeClass = "cube player-cube"; // TODO Remove this?
+    const basePlayerCubeClass = "cube player-cube";
 
     // Check if side classes are bases classes
     const computerSideClassesAreBase = sideClasses.every(
@@ -111,7 +109,6 @@ export default function Cube({
   useEffect(() => {
     if (computerTurn && !gameOver) {
       applyComputerTurnStyles();
-      // Only do the following if not during a repeat phase
       if (!repeat) {
         // Reset the player moves each round
         setPlayerMoves([]);
@@ -171,29 +168,32 @@ export default function Cube({
   }, [repeat]);
 
   /*
-   * Resets when it's the player's turn
+   * Resets when the player's turn changes
    */
   useEffect(() => {
     // Change styling of the cube and sides for the player turn
-    if (playerTurn) applyPlayerTurnStyles();
-    // Listen for keypresses
-    window.addEventListener("keydown", downHandler);
-    // Clean up keypress listener
-    return () => window.removeEventListener("keydown", downHandler);
+    if (playerTurn) {
+      applyPlayerTurnStyles();
+    }
   }, [playerTurn]);
 
   /*
-   * Resets when it's the player's turn and player is not busy (looking at a modal, etc.)
+   * Listens for conditions during a player turn to when to listen for keypresses
    */
   useEffect(() => {
-    // Listen for keypresses
-    window.addEventListener("keydown", downHandler);
-    // Clean up keypress listener
-    return () => window.removeEventListener("keydown", downHandler);
-  }, [playerTurn, playerBusy]);
+    if (
+      (playerTurn && !playerBusy && playerClassBase) ||
+      (gameOver && !playerBusy)
+    ) {
+      // Listen for keypresses
+      window.addEventListener("keydown", downHandler);
+      // Clean up keypress listener
+      return () => window.removeEventListener("keydown", downHandler);
+    }
+  }, [playerTurn, playerBusy, playerClassBase, gameOver]);
 
+  // Detect keypresses during a player turn
   function downHandler({ key }) {
-    // console.log({ key });
     if (playerTurn && !playerBusy) {
       if (key === "w" || key === "W" || key === "ArrowUp") addPlayerMove(0);
       if (key === "a" || key === "A" || key === "ArrowLeft") addPlayerMove(2);
@@ -234,6 +234,9 @@ export default function Cube({
     }
   }, [playerMoves]);
 
+  /*
+   * Resets when the player loses the game
+   */
   useEffect(() => {
     if (gameOver) {
       setPlayerTurn(false);
@@ -241,6 +244,9 @@ export default function Cube({
     }
   }, [gameOver]);
 
+  /*
+   * Resets when the player quits the game
+   */
   useEffect(() => {
     setPlayerTurn(false);
     applyComputerTurnStyles();
@@ -261,7 +267,7 @@ export default function Cube({
 
   // Add the selected move to the array of player moves and turn that side on/off
   function addPlayerMove(id) {
-    turnPlayerSideOn(id);
+    turnPlayerSideOn(String(id));
     setPlayerMoves((prevMoves) => [...prevMoves, parseInt(id)]);
   }
 
@@ -324,12 +330,6 @@ export default function Cube({
       toggleDisableButtonsDuringComputerMoves(false);
       setPlayerTurn(true);
     }
-  }
-
-  function cheat() {
-    addPoint();
-    advanceRound();
-    setTimeout(() => endPlayerTurn(), 1000 * playerOnSeconds);
   }
 
   return (

@@ -36,6 +36,7 @@
   --main-buttons-hover-background-color: yellow;
   --main-buttons-hover-text-color: red;
   --main-buttons-disabled-color: rgb(255, 150, 150);
+  --highscores-table-stripe: #c1e6f0;
   --cube-side0-color: red;
   --cube-side1-color: green;
   --cube-side2-color: blue;
@@ -49,11 +50,12 @@
   --title-name-buttons-color: #0e8388;
   --main-buttons-hover-background-color: #f9d923;
   --main-buttons-hover-text-color: #b25068;
-  --main-buttons-disabled-color: rgb(255, 150, 150);
+  --main-buttons-disabled-color: #2a4242;
+  --highscores-table-stripe: #303636;
   --cube-side0-color: red;
   --cube-side1-color: green;
   --cube-side2-color: blue;
-  --cube-shadow-color: yellow; */
+  --cube-shadow-color: white; */
 }
 
 * {
@@ -62,19 +64,16 @@
 
 body {
   margin: 0px;
-  height: 100vh;
-  background-color: var(--body-background-color);
   /* background: radial-gradient(rgb(233, 255, 255), rgb(82, 82, 82)); */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   font-size: 1.25rem;
-  color: var(--body-text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
+/* code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
-}
+} */
