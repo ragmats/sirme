@@ -242,11 +242,17 @@ a:hover {
   }
 }
 
-@media only screen and (orientation: portrait) and (max-height: 690px) {
+@media only screen and (orientation: portrait) and (max-height: 740px) {
   .right-menu-button {
     height: 32px;
     font-size: 0.95rem;
     /* margin: 5px; */
+  }
+  .cube-panel {
+    height: 208px;
+  }
+  .control-panel {
+    margin-top: 10px;
   }
 }
 

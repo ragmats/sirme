@@ -59,7 +59,7 @@
   transition: box-shadow 0.5s ease-in-out;
 }
 
-@media only screen and (orientation: landscape) and (max-height: 355px) {
+@media only screen and (max-height: 740px) {
   .cube {
     width: 202px;
     height: 117px;
