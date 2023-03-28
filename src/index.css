@@ -37,6 +37,7 @@
   --main-buttons-hover-text-color: red;
   --main-buttons-disabled-color: rgb(255, 150, 150);
   --highscores-table-stripe: #c1e6f0;
+  --highscores-table-highlight: rgb(216, 190, 73);
   --cube-side0-color: red;
   --cube-side1-color: green;
   --cube-side2-color: blue;
@@ -52,6 +53,7 @@
   --main-buttons-hover-text-color: #b25068;
   --main-buttons-disabled-color: #2a4242;
   --highscores-table-stripe: #303636;
+  --highscores-table-highlight: #7bd0e7;
   --cube-side0-color: red;
   --cube-side1-color: green;
   --cube-side2-color: blue;

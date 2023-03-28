@@ -27,6 +27,6 @@ td {
 }
 
 tr.highlighted {
-  background-color: var(--main-buttons-hover-background-color);
+  background-color: var(--highscores-table-highlight);
   color: black;
 }
