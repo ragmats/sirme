@@ -340,6 +340,9 @@ export default function App() {
                 personalBest={personalBest}
                 score={score}
                 playerRank={playerRank}
+                highScores={highScores}
+                restart={restart}
+                quit={quit}
               />
             </div>
             <div className="control-panel">
