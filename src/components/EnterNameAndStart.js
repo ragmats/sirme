@@ -11,14 +11,6 @@ export default function EnterNameAndStart({
   const [show, setShow] = useState(true);
   const [name, setName] = useState(playerName);
 
-  useEffect(() => {
-    if (name === "") {
-      localStorage.setItem("playerName", defaultName);
-    } else {
-      localStorage.setItem("playerName", name);
-    }
-  }, [name]);
-
   const handleClose = () => {
     setShow(false);
     setEndGame(false);
@@ -26,7 +18,11 @@ export default function EnterNameAndStart({
 
   function submitForm(e) {
     e.preventDefault();
-    setPlayerName(name);
+    if (name === "") {
+      setPlayerName(defaultName);
+    } else {
+      setPlayerName(name);
+    }
     handleClose();
   }
 

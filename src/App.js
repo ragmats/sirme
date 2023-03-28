@@ -150,6 +150,7 @@ export default function App() {
    * Resets whenever the player changes name
    */
   useEffect(() => {
+    localStorage.setItem("playerName", playerName);
     getCurrentPlayerRank();
   }, [playerName]);
 
@@ -295,70 +296,68 @@ export default function App() {
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       <div className="App" id={theme}>
-        <div className="app-main">
-          {endGame ? (
-            <Start
-              setEndGame={setEndGame}
-              setPlayerName={setPlayerName}
-              defaultName={defaultName}
+        {endGame ? (
+          <Start
+            setEndGame={setEndGame}
+            setPlayerName={setPlayerName}
+            defaultName={defaultName}
+            playerName={playerName}
+          />
+        ) : null}
+        <div>
+          <h1>sirme</h1>
+          <h4>a Simon game</h4>
+          <div className="main">
+            <InfoPanel
               playerName={playerName}
+              round={round}
+              points={points}
+              repeats={repeats}
+              score={score}
+              playerRank={playerRank}
             />
-          ) : null}
-          <div>
-            <h1>sirme</h1>
-            <h4>a Simon game</h4>
-            <div className="main">
-              <InfoPanel
-                playerName={playerName}
-                round={round}
-                points={points}
-                repeats={repeats}
+            <div className="cube-panel">
+              <Cube
+                computerStart={computerStart}
+                restart={restart}
+                handleEndGame={handleEndGame}
+                repeat={repeat}
+                setRepeat={setRepeat}
+                setDisableButtonsDuringComputerMoves={
+                  setDisableButtonsDuringComputerMoves
+                }
+                setRound={setRound}
+                setPoints={setPoints}
+                gameOver={gameOver}
+                setGameOver={setGameOver}
+                handleRestart={handleRestart}
+                quit={quit}
+                playerBusy={playerBusy}
+                computerSpeed={computerSpeed}
+              />
+              <ScoreMessage
+                gameOver={gameOver}
+                personalBest={personalBest}
                 score={score}
                 playerRank={playerRank}
               />
-              <div className="cube-panel">
-                <Cube
-                  computerStart={computerStart}
-                  restart={restart}
-                  handleEndGame={handleEndGame}
-                  repeat={repeat}
-                  setRepeat={setRepeat}
-                  setDisableButtonsDuringComputerMoves={
-                    setDisableButtonsDuringComputerMoves
-                  }
-                  setRound={setRound}
-                  setPoints={setPoints}
-                  gameOver={gameOver}
-                  setGameOver={setGameOver}
-                  handleRestart={handleRestart}
-                  quit={quit}
-                  playerBusy={playerBusy}
-                  computerSpeed={computerSpeed}
-                />
-                <ScoreMessage
-                  gameOver={gameOver}
-                  personalBest={personalBest}
-                  score={score}
-                  playerRank={playerRank}
-                />
-              </div>
-              <div className="control-panel">
-                <ControlPanel
-                  disableButtonsDuringComputerMoves={
-                    disableButtonsDuringComputerMoves
-                  }
-                  repeatComputer={repeatComputer}
-                  handleRestart={handleRestart}
-                  playerName={playerName}
-                  highScores={highScores}
-                  clearHighScores={clearHighScores}
-                  gameOver={gameOver}
-                  setQuit={setQuit}
-                  setPlayerBusy={setPlayerBusy}
-                  computerSpeed={computerSpeed}
-                  toggleComputerSpeed={toggleComputerSpeed}
-                />
-              </div>
+            </div>
+            <div className="control-panel">
+              <ControlPanel
+                disableButtonsDuringComputerMoves={
+                  disableButtonsDuringComputerMoves
+                }
+                repeatComputer={repeatComputer}
+                handleRestart={handleRestart}
+                playerName={playerName}
+                highScores={highScores}
+                clearHighScores={clearHighScores}
+                gameOver={gameOver}
+                setQuit={setQuit}
+                setPlayerBusy={setPlayerBusy}
+                computerSpeed={computerSpeed}
+                toggleComputerSpeed={toggleComputerSpeed}
+              />
             </div>
           </div>
         </div>
