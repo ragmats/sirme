@@ -62,9 +62,13 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0px;
-  min-height: 100svh;
+  height: 100%;
+}
+
+body {
   background-color: var(--body-background-color);
   color: var(--body-text-color);
   /* background: radial-gradient(rgb(233, 255, 255), rgb(82, 82, 82)); */
