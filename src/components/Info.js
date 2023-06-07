@@ -56,14 +56,7 @@ export default function HighScores({
             </ul>
 
             <h3>Etc.</h3>
-            <p>
-              SIRME was created in React in March 2023. Find more web dev
-              projects at{" "}
-              <a target="_blank" href="https://stevencoy.com">
-                stevencoy.com
-              </a>
-              .
-            </p>
+            <p>SIRME was created in React in March 2023.</p>
           </div>
         </Modal.Body>
         <Modal.Footer>
