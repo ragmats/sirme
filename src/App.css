@@ -84,7 +84,7 @@ a:hover {
 
 .info-panel {
   font-size: 1.5rem;
-  width: 202px;
+  width: 250px;
   /* box-shadow: 0px 0px 0px 1px purple; */
   display: flex;
   flex-direction: column;
@@ -96,7 +96,7 @@ a:hover {
   /* box-shadow: 0px 0px 0px 1px green; */
   font-size: 2rem;
   font-variant: small-caps;
-  width: 202px;
+  width: 250px;
   line-height: 1;
   color: var(--title-name-buttons-color);
 }
@@ -111,7 +111,7 @@ a:hover {
 .cube-panel {
   /* box-shadow: 0px 0px 0px 1px red; */
   height: 280px;
-  width: 202px;
+  width: 250px;
 }
 
 .score-message {
@@ -138,7 +138,7 @@ a:hover {
 /* Right SIDE CONTROL-PANEL */
 
 .control-panel {
-  width: 202px;
+  width: 250px;
   /* box-shadow: 0px 0px 0px 1px orange; */
   display: flex;
   flex-direction: column;
@@ -151,7 +151,7 @@ a:hover {
   border-radius: 7px;
   background: transparent;
   color: var(--title-name-buttons-color);
-  width: 125px;
+  width: 150px;
   height: 40px;
   transition: border, color 0.25s ease-out;
   /* margin: 5px; */
@@ -237,7 +237,7 @@ a:hover {
     border-radius: 7px;
     background: transparent;
     color: var(--title-name-buttons-color);
-    width: 101px;
+    width: 125px;
     transition: border, color 0.25s ease-out;
     /* margin: 5px; */
   }
